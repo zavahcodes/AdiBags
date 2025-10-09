@@ -23,6 +23,7 @@ local ITEM_QUALITY_UNCOMMON = _G.ITEM_QUALITY_UNCOMMON
 local pcall = _G.pcall
 local select = _G.select
 local setmetatable = _G.setmetatable
+local string = _G.string
 local strjoin = _G.strjoin
 local strmatch = _G.strmatch
 local tonumber = _G.tonumber
@@ -180,4 +181,36 @@ function addon.CanPutItemInContainer(item, container)
 	local freeSlots, containerFamily = GetContainerNumFreeSlots(container)
 	local itemFamily = addon.GetItemFamily(item)
 	return freeSlots > 0 and (containerFamily == 0 or band(itemFamily, containerFamily) ~= 0), freeSlots, itemFamily, containerFamily
+end
+
+--------------------------------------------------------------------------------
+-- Number formatting for large stacks
+--------------------------------------------------------------------------------
+
+function addon.FormatLargeNumber(count)
+	if count < 1000 then
+		return tostring(count)
+	elseif count < 10000 then
+		-- For numbers 1000-9999, show one decimal place if needed (e.g., 1.2k, 2.5k)
+		local thousands = count / 1000
+		if thousands == floor(thousands) then
+			return tostring(floor(thousands)) .. "k"
+		else
+			return string.format("%.1fk", thousands)
+		end
+	elseif count < 1000000 then
+		-- For numbers 10000-999999, show whole numbers only (e.g., 10k, 999k)
+		return tostring(floor(count / 1000)) .. "k"
+	elseif count < 10000000 then
+		-- For numbers 1000000-9999999, show one decimal place if needed (e.g., 1.2M, 2.5M)
+		local millions = count / 1000000
+		if millions == floor(millions) then
+			return tostring(floor(millions)) .. "M"
+		else
+			return string.format("%.1fM", millions)
+		end
+	else
+		-- For numbers 10000000+, show whole millions only (e.g., 10M, 999M)
+		return tostring(floor(count / 1000000)) .. "M"
+	end
 end

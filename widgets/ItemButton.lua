@@ -55,6 +55,13 @@ function buttonProto:OnCreate()
     for i, childName in pairs(childrenNames) do
         self[childName] = _G[name .. childName]
     end
+
+    -- Reposition Count text: right-aligned at bottom with 1px margin
+    if self.Count then
+        self.Count:ClearAllPoints()
+        self.Count:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", -1, 1)
+    end
+
     self:RegisterForDrag("LeftButton")
     self:RegisterForClicks("LeftButtonUp", "RightButtonUp")
     self:SetScript("OnShow", self.OnShow)
@@ -347,7 +354,7 @@ function buttonProto:UpdateCount()
     local count = self:GetCount() or 0
     self.count = count
     if count > 1 then
-        self.Count:SetText(count)
+        self.Count:SetText(addon.FormatLargeNumber(count))
         self.Count:Show()
     else
         self.Count:Hide()

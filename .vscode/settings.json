@@ -1,0 +1,9 @@
+{
+  "files.defaultLanguage": "lua",
+  "lua.telemetry.enable": false,
+  "editor.rulers": [80, 120],
+  "editor.tabSize": 4,
+  "editor.insertSpaces": false,
+  "files.trimTrailingWhitespace": true,
+  "files.insertFinalNewline": true
+}
