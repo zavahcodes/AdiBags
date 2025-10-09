@@ -83,6 +83,7 @@ L["One section per set"] = true
 L["Only one section."] = true
 L["Please note this filter matchs every item. Any filter with lower priority than this one will have no effect."] = true
 L["Put any item that can be equipped (including bags) into the \"Equipment\" section."] = true
+L["Put arrows, bullets and other projectiles in the \"Ammunition\" section."] = true
 L["Put items categorized as keys in their own section."] = true
 L["Put items belonging to one or more sets of the built-in gear manager in specific sections."] = true
 L["Put items in sections depending on their first-level category at the Auction House."] = true

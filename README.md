@@ -54,6 +54,28 @@
 8. There is still much to do, hope you stay with me and enjoy addon!
 </details>
 
+## 🚀 Latest Improvements (October 2025)
+<details> <summary> Click to see recent enhancements: </summary>
+
+### Enhanced Junk Filter
+- **Improved "Low quality items" detection**: Now includes both gray (Poor) AND white (Common) equipment items when the "Low quality items" option is enabled
+- **Smart equipment detection**: Only white equipment is considered junk, not consumables or other white items
+- **Maintains backward compatibility**: Gray items still work exactly as before
+
+### New Ammunition Filter  
+- **Dedicated Ammunition section**: Added a new high-priority filter that automatically separates arrows, bullets, and other projectiles
+- **Precise detection**: Uses `INVTYPE_AMMO` equipment slot for accurate identification
+- **Clean organization**: Ammunition no longer appears in the Junk section, keeping your projectiles easily accessible
+- **Highest priority**: Runs before all other filters to ensure proper categorization
+
+### Technical Improvements
+- **Filter priority optimization**: Ammunition filter runs at priority 95 (highest) to prevent conflicts
+- **Code quality**: Added proper constants and clear documentation
+- **Localization ready**: Added localization strings for new features
+
+These improvements make bag management more intuitive and prevent accidental disposal of useful items!
+</details>
+
 ## Conclusion
 Interesting extra-modules for AdiBags, you can download them here - [AdiBags-WoTLK-3.3.5-Mods](https://github.com/Sattva-108/AdiBags-WoTLK-3.3.5-Mods) 
 

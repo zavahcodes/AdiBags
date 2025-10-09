@@ -11,6 +11,7 @@ local L = addon.L
 local _G = _G
 local GetItemInfo = _G.GetItemInfo
 local ITEM_QUALITY_POOR = _G.ITEM_QUALITY_POOR
+local ITEM_QUALITY_COMMON = _G.ITEM_QUALITY_COMMON or 1
 local ITEM_QUALITY_UNCOMMON = _G.ITEM_QUALITY_UNCOMMON
 local select = _G.select
 local setmetatable = _G.setmetatable
@@ -56,8 +57,9 @@ function mod:OnEnable()
 end
 
 function mod:BaseCheckItem(itemId, force)
-	local _, _, quality, _, _, class, subclass = GetItemInfo(itemId)
-	if ((force or prefs.sources.lowQuality) and quality == ITEM_QUALITY_POOR)
+	local _, _, quality, _, _, class, subclass, _, equipSlot = GetItemInfo(itemId)
+	local isEquipment = equipSlot and equipSlot ~= "" and equipSlot ~= "INVTYPE_BAG"
+	if ((force or prefs.sources.lowQuality) and (quality == ITEM_QUALITY_POOR or (isEquipment and quality == ITEM_QUALITY_COMMON)))
 		or ((force or prefs.sources.junkCategory) and quality and quality < ITEM_QUALITY_UNCOMMON and (class == JUNK or subclass == JUNK)) then
 		return true
 	end

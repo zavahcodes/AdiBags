@@ -202,6 +202,17 @@ function addon:SetupDefaultFilters()
         questItemFilter.uiDesc = L['Put quest-related items in their own section.']
     end
 
+    -- [95] Ammunition
+    do
+        local ammunitionFilter = addon:RegisterFilter('Ammunition', 95, function(self, slotData)
+            if slotData.equipSlot == "INVTYPE_AMMO" then
+                return AMMUNITION
+            end
+        end)
+        ammunitionFilter.uiName = AMMUNITION
+        ammunitionFilter.uiDesc = L['Put arrows, bullets and other projectiles in the "Ammunition" section.']
+    end
+
     -- [60] Equipment
     do
         local equipCategories = {
