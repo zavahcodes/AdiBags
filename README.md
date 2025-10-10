@@ -3,6 +3,59 @@
 
 ![wow_CNgtiMLTXH](https://user-images.githubusercontent.com/74269253/229909788-3782f7b8-a995-4095-b997-37bf895675b6.png)
 
+## 🚀 Latest Improvements (October 2025)
+<details open> <summary> Click to see recent enhancements: </summary>
+
+### New Manual Refresh Button
+- **Quick refresh control**: Added new "R" button to the top-left corner of bags (before the "T" button)
+- **Force layout update**: Manually trigger a complete refresh of bag layout and item reorganization
+- **Use cases**: Perfect for when items don't organize correctly, after changing filters, or when layout seems out of sync
+- **One-click solution**: Simply click "R" to force a complete bag reorganization without closing/reopening bags
+
+### Enhanced Item Stack Display
+- **Compact number formatting**: Item stacks of 1000+ now display in compact format (1k, 1.2k, 15k, 1.5M, etc.)
+- **Smart formatting rules**:
+  - 1000-9999: Shows decimals when needed (1.2k, 2.5k)
+  - 10000+: Shows whole numbers (15k, 250k)
+  - 1M+: Shows millions with decimals when needed (1.2M, 15M)
+- **Improved readability**: Much cleaner bag interface when dealing with high-stack items on private servers
+
+### Enhanced Item Level Display
+- **Improved positioning**: Item level text repositioned to bottom-left corner with 1px margin for better visibility
+- **Quality-based coloring**: Changed default color scheme from complex level-based to intuitive quality-based colors:
+  - Gray text for Poor quality items
+  - White text for Common quality items
+  - Green text for Uncommon quality items
+  - Blue text for Rare quality items
+  - Purple text for Epic quality items
+  - Orange text for Legendary quality items
+- **Better positioning**: Item count and item level now positioned at opposite corners (bottom-right and bottom-left respectively) for optimal space usage
+
+### UI Positioning Improvements
+- **Item count repositioning**: Stack count text moved to bottom-right corner with 1px margin for consistent spacing
+- **Non-overlapping text**: Item level and item count now positioned at opposite corners to prevent text overlap
+- **Cleaner visual layout**: Better spacing and alignment throughout the bag interface
+
+### Enhanced Junk Filter
+- **Improved "Low quality items" detection**: Now includes both gray (Poor) AND white (Common) equipment items when the "Low quality items" option is enabled
+- **Smart equipment detection**: Only white equipment is considered junk, not consumables or other white items
+- **Maintains backward compatibility**: Gray items still work exactly as before
+
+### New Ammunition Filter
+- **Dedicated Ammunition section**: Added a new high-priority filter that automatically separates arrows, bullets, and other projectiles
+- **Precise detection**: Uses `INVTYPE_AMMO` equipment slot for accurate identification
+- **Clean organization**: Ammunition no longer appears in the Junk section, keeping your projectiles easily accessible
+- **Highest priority**: Runs before all other filters to ensure proper categorization
+
+### Technical Improvements
+- **Filter priority optimization**: Ammunition filter runs at priority 95 (highest) to prevent conflicts
+- **Code quality**: Added proper constants and clear documentation
+- **Localization ready**: Added localization strings for new features (English and Spanish)
+- **Number formatting utility**: Added robust `FormatLargeNumber` function for consistent display formatting
+- **Modular design**: New features implemented as separate modules for easy maintenance
+
+These improvements make bag management more intuitive, prevent accidental disposal of useful items, and provide much better readability for high-stack items!
+</details>
 
 ## 📦 Download & Installation
 
@@ -52,53 +105,6 @@
 6. Fixed the database bug, mentioned by addon Author in his README file, that was causing ALL Items to be tagged as `new` for some users.
 7. And some minor bug fixes.
 8. There is still much to do, hope you stay with me and enjoy addon!
-</details>
-
-## 🚀 Latest Improvements (October 2025)
-<details> <summary> Click to see recent enhancements: </summary>
-
-### Enhanced Item Stack Display
-- **Compact number formatting**: Item stacks of 1000+ now display in compact format (1k, 1.2k, 15k, 1.5M, etc.)
-- **Smart formatting rules**:
-  - 1000-9999: Shows decimals when needed (1.2k, 2.5k)
-  - 10000+: Shows whole numbers (15k, 250k)
-  - 1M+: Shows millions with decimals when needed (1.2M, 15M)
-- **Improved readability**: Much cleaner bag interface when dealing with high-stack items on private servers
-
-### Enhanced Item Level Display
-- **Improved positioning**: Item level text repositioned to bottom-left corner with 1px margin for better visibility
-- **Quality-based coloring**: Changed default color scheme from complex level-based to intuitive quality-based colors:
-  - Gray text for Poor quality items
-  - White text for Common quality items
-  - Green text for Uncommon quality items
-  - Blue text for Rare quality items
-  - Purple text for Epic quality items
-  - Orange text for Legendary quality items
-- **Better positioning**: Item count and item level now positioned at opposite corners (bottom-right and bottom-left respectively) for optimal space usage
-
-### UI Positioning Improvements
-- **Item count repositioning**: Stack count text moved to bottom-right corner with 1px margin for consistent spacing
-- **Non-overlapping text**: Item level and item count now positioned at opposite corners to prevent text overlap
-- **Cleaner visual layout**: Better spacing and alignment throughout the bag interface
-
-### Enhanced Junk Filter
-- **Improved "Low quality items" detection**: Now includes both gray (Poor) AND white (Common) equipment items when the "Low quality items" option is enabled
-- **Smart equipment detection**: Only white equipment is considered junk, not consumables or other white items
-- **Maintains backward compatibility**: Gray items still work exactly as before
-
-### New Ammunition Filter
-- **Dedicated Ammunition section**: Added a new high-priority filter that automatically separates arrows, bullets, and other projectiles
-- **Precise detection**: Uses `INVTYPE_AMMO` equipment slot for accurate identification
-- **Clean organization**: Ammunition no longer appears in the Junk section, keeping your projectiles easily accessible
-- **Highest priority**: Runs before all other filters to ensure proper categorization
-
-### Technical Improvements
-- **Filter priority optimization**: Ammunition filter runs at priority 95 (highest) to prevent conflicts
-- **Code quality**: Added proper constants and clear documentation
-- **Localization ready**: Added localization strings for new features
-- **Number formatting utility**: Added robust `FormatLargeNumber` function for consistent display formatting
-
-These improvements make bag management more intuitive, prevent accidental disposal of useful items, and provide much better readability for high-stack items!
 </details>
 
 ## Conclusion

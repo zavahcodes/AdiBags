@@ -37,41 +37,41 @@ end
 local function RefreshButton_OnClick(button)
 	PlaySound("igMainMenuOptionCheckBoxOn")
 	local container = button.container
-	
+
 	-- Force a complete refresh
 	container.forceLayout = true
 	container.filtersChanged = true
-	
+
 	-- Redispatch all items
 	container:RedispatchAllItems()
-	
+
 	-- Force layout update
 	container:LayoutSections(0)
-	
+
 	-- Send a message that refresh was triggered
 	addon:SendMessage('AdiBags_RefreshLayout', container.name)
-	
+
 	-- Debug info
 	addon:Debug('Manual refresh triggered for', container.name)
 end
 
 function mod:OnBagFrameCreated(bag)
 	local container = bag:GetFrame()
-	
+
 	local button = CreateFrame("Button", nil, container, "UIPanelButtonTemplate")
 	button:SetText("R")
 	button:SetWidth(20)
 	button:SetHeight(20)
 	button:SetScript("OnClick", RefreshButton_OnClick)
 	button.container = container
-	
-	-- Add the button with order 15 (after T=0, V=5, N=10)
-	container:AddHeaderWidget(button, 15)
-	
+
+	-- Add the button with order -5 (before T=0)
+	container:AddHeaderWidget(button, -5)
+
 	addon.SetupTooltip(button, {
 		L["Refresh layout"],
 		L["Click to manually refresh the bag layout and reorganize all items."]
 	}, "ANCHOR_TOPLEFT", 0, 8)
-	
+
 	buttons[button] = true
 end
