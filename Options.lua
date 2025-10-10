@@ -79,7 +79,7 @@ function handlerProto:Set(info, value, ...)
 	end
 	if type(self.PostSet) == "function" then
 		self:PostSet(path, value, ...)
-	end	
+	end
 end
 
 function handlerProto:IsDisabled(info)
@@ -379,7 +379,7 @@ function addon:GetOptions()
 						type = 'toggle',
 						order = 145.2,
 						disabled = function(info) return (info.handler and info.handler:IsDisabled(info)) end,
-					},					
+					},
 					laxOrdering = {
 						name = L['Layout priority'],
 						type = 'select',
@@ -486,6 +486,19 @@ function addon:GetOptions()
 								desc = L['Check this to display a colored border around items, based on item quality.'],
 								type = 'toggle',
 								order = 210,
+							},
+							qualityDisplayMode = {
+								name = L['Display method'],
+								desc = L['Choose how item quality is displayed:\n\nBorder with Glow: Traditional colored border with bright glow effect\nBorder without Glow: Colored border with solid appearance, no glow'],
+								type = 'select',
+								order = 215,
+								values = {
+									border = L['Border with Glow (original)'],
+									custom = L['Border without Glow (solid)'],
+								},
+								disabled = function(info)
+									return info.handler:IsDisabled(info) or not addon.db.profile.qualityHighlight
+								end,
 							},
 							qualityOpacity = {
 								name = L['Opacity'],

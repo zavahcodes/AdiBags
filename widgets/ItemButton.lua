@@ -56,10 +56,10 @@ function buttonProto:OnCreate()
         self[childName] = _G[name .. childName]
     end
 
-    -- Reposition Count text: right-aligned at bottom with 1px margin
+    -- Reposition Count text: right-aligned at bottom with no margin
     if self.Count then
         self.Count:ClearAllPoints()
-        self.Count:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", -1, 1)
+        self.Count:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", 0, 0)
     end
 
     self:RegisterForDrag("LeftButton")
@@ -389,6 +389,16 @@ function buttonProto:UpdateCooldown()
     return ContainerFrame_UpdateCooldown(self.bag, self)
 end
 
+--------------------------------------------------------------------------------
+-- Quality display methods
+--------------------------------------------------------------------------------
+
+local function ApplyCustomQualityDisplay(button, quality, r, g, b, a)
+    -- Custom quality display method: simple clean border
+    -- Uses a straightforward approach for reliable, visible borders
+    return "SIMPLE_BORDER", 0, 1, 0, 1, "BLEND", a
+end
+
 function buttonProto:UpdateBorder(isolatedEvent)
     if self.hasItem then
 		local texture, r, g, b, a, x1, x2, y1, y2, blendMode = nil, 1, 1, 1, 1, 0, 1, 0, 1, "BLEND"
@@ -403,8 +413,20 @@ function buttonProto:UpdateBorder(isolatedEvent)
             if quality and quality >= ITEM_QUALITY_UNCOMMON then
                 r, g, b = GetItemQualityColor(quality)
                 a = addon.db.profile.qualityOpacity
-				texture, x1, x2, y1, y2 = [[Interface\Buttons\UI-ActionButton-Border]], 14/64, 49/64, 15/64, 50/64
-                blendMode = "ADD"
+
+                -- Check which display method to use
+                if addon.db.profile.qualityDisplayMode == 'border' then
+                    -- Current method: colored border
+                    texture, x1, x2, y1, y2 = [[Interface\Buttons\UI-ActionButton-Border]], 14/64, 49/64, 15/64, 50/64
+                    blendMode = "ADD"
+                elseif addon.db.profile.qualityDisplayMode == 'custom' then
+                    -- New method: use custom function
+                    local customAlpha
+                    texture, x1, x2, y1, y2, blendMode, customAlpha = ApplyCustomQualityDisplay(self, quality, r, g, b, a)
+                    if customAlpha then
+                        a = customAlpha
+                    end
+                end
             elseif quality == ITEM_QUALITY_POOR and addon.db.profile.dimJunk then
                 local v = 1 - 0.5 * addon.db.profile.qualityOpacity
 				texture, blendMode, r, g, b = true, "MOD", v, v, v
@@ -415,6 +437,17 @@ function buttonProto:UpdateBorder(isolatedEvent)
 			if texture == true then
                 border:SetVertexColor(1, 1, 1, 1)
                 border:SetTexture(r, g, b, a)
+            elseif texture == "SIMPLE_BORDER" then
+                -- Create simple, clean border without complications
+                -- Just use the normal texture coloring for a subtle but visible border
+                if self.NormalTexture then
+                    self.NormalTexture:SetVertexColor(r, g, b, a * 1.5)
+                end
+                border:Hide()
+                if isolatedEvent then
+                    addon:SendMessage('AdiBags_UpdateBorder', self)
+                end
+                return
             else
 				border:SetTexture(texture)
                 border:SetVertexColor(r, g, b, a)
@@ -430,6 +463,12 @@ function buttonProto:UpdateBorder(isolatedEvent)
     end
 
     self.IconQuestTexture:Hide()
+
+    -- Reset normal texture color if it was modified by simple border
+    if self.NormalTexture then
+        self.NormalTexture:SetVertexColor(1, 1, 1, 1)
+    end
+
     if isolatedEvent then
         addon:SendMessage('AdiBags_UpdateBorder', self)
     end
@@ -513,9 +552,17 @@ if Masque then
                 -- Gray color for junk
                 r, g, b, a = 0.5, 0.5, 0.5, addon.db.profile.qualityOpacity or 0.7
             elseif itemQuality and itemQuality >= ITEM_QUALITY_UNCOMMON and addon.db.profile.qualityHighlight then
-                -- Color by quality
-                r, g, b = GetItemQualityColor(itemQuality)
-                a = addon.db.profile.qualityOpacity or 1
+                -- Color by quality - check display mode
+                if addon.db.profile.qualityDisplayMode == 'border' then
+                    -- Current method: colored border
+                    r, g, b = GetItemQualityColor(itemQuality)
+                    a = addon.db.profile.qualityOpacity or 1
+                elseif addon.db.profile.qualityDisplayMode == 'custom' then
+                    -- New method: for now, use same as border method
+                    -- TODO: Implement custom display logic for Masque
+                    r, g, b = GetItemQualityColor(itemQuality)
+                    a = addon.db.profile.qualityOpacity or 1
+                end
             end
 
             local msqAPI = LibStub("Masque", true)

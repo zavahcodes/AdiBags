@@ -160,6 +160,7 @@ local DEFAULT_SETTINGS = {
 		showAnchorTooltip = true,
 		laxOrdering = 1,
 		qualityHighlight = true,
+		qualityDisplayMode = 'border', -- 'border' (current method) or 'custom' (new method)
 		qualityOpacity = 1.0,
 		dimJunk = true,
 		questIndicator = true,
@@ -173,13 +174,13 @@ local DEFAULT_SETTINGS = {
 			freeSpace = true,
 			notWhenTrading = 1,
 		},
-		skin = {		
+		skin = {
 			background = "Blizzard Tooltip",
 			border = "Blizzard Tooltip",
 			borderWidth = 16,
 			insets = 3,
 			BackpackColor = { 0, 0, 0, 1 },
-			BankColor = { 0, 0, 0.5, 1 },			
+			BankColor = { 0, 0, 0.5, 1 },
 		},
 	},
 	char = {
@@ -201,14 +202,14 @@ function addon:OnInitialize()
 	DEFAULT_SETTINGS.profile.bagFont = bfd
 	DEFAULT_SETTINGS.profile.sectionFont = self:GetFontDefaults(GameFontNormalLeft)
 
-	self.db = LibStub('AceDB-3.0'):New(addonName.."DB", DEFAULT_SETTINGS, true)	
+	self.db = LibStub('AceDB-3.0'):New(addonName.."DB", DEFAULT_SETTINGS, true)
 	self.db.RegisterCallback(self, "OnProfileChanged")
 	self.db.RegisterCallback(self, "OnProfileCopied", "OnProfileChanged")
 	self.db.RegisterCallback(self, "OnProfileReset", "Reconfigure")
 		-- self.db.RegisterCallback(self, "OnLayoutBagsChanged", "LayoutBags")
 
 	self.bagFont = self:CreateFont(addonName.."BagFont", GameFontHighlightLarge, function() return self.db.profile.bagFont end)
-	self.sectionFont = self:CreateFont(addonName.."SectionFont", GameFontNormalLeft, function() return self.db.profile.sectionFont end)		
+	self.sectionFont = self:CreateFont(addonName.."SectionFont", GameFontNormalLeft, function() return self.db.profile.sectionFont end)
 
 	self.itemParentFrames = {}
 
@@ -452,7 +453,7 @@ function addon:ConfigChanged(vars)
 			elseif strmatch(name, 'rowWidth') then
 				return self:SendMessage('AdiBags_LayoutChanged')
 			elseif strmatch(name, '^skin%.font') then
-				return self:UpdateFonts()				
+				return self:UpdateFonts()
 			end
 		end
 	end
@@ -1029,7 +1030,7 @@ function addon:ToggleCurrentLayout()
 		UIErrorsFrame:SetTimeVisible(0.5)
 
 		-- After 0.6 second, change to default UI ErrorsFrame timing.
-		LibCompat.After(0.6, function() 
+		LibCompat.After(0.6, function()
 			UIErrorsFrame:SetTimeVisible(3)
 		end)
 
@@ -1049,7 +1050,7 @@ function addon:ToggleCurrentLayout()
 		UIErrorsFrame:SetTimeVisible(0.5)
 
 
-		LibCompat.After(0.6, function() 
+		LibCompat.After(0.6, function()
 			UIErrorsFrame:SetTimeVisible(5)
 		end)
 
