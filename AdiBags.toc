@@ -60,6 +60,7 @@ modules\Junk.lua
 modules\CurrencyFrame.lua
 modules\TooltipInfo.lua
 modules\SectionVisibilityDropdown.lua
+modules\RefreshLayout.lua
 modules\ItemLevel.lua
 modules\BankSwitcher.lua
 

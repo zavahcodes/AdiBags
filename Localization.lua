@@ -233,6 +233,11 @@ L["Reset new items"] = true
 L["Track new items in each bag, displaying a glowing aura over them and putting them in a special section. \"New\" status can be reset by clicking on the small \"N\" button at top left of bags."] = true
 L["Track new items"] = true
 
+-- modules/RefreshLayout.lua
+L["Refresh layout"] = true
+L["Add a button to manually refresh the bag layout and reorganize items. Click the \"R\" button to force a complete refresh of all bags."] = true
+L["Click to manually refresh the bag layout and reorganize all items."] = true
+
 -- modules/SearchHighlight.lua
 L["Enter a text to search in item names."] = true
 L["Item search"] = true
@@ -938,6 +943,9 @@ elseif locale == 'ruRU' then
 
     ------------------------ esES ------------------------
 elseif locale == 'esES' then
+    L["Refresh layout"] = "Refrescar disposición"
+    L["Add a button to manually refresh the bag layout and reorganize items. Click the \"R\" button to force a complete refresh of all bags."] = "Añade un botón para refrescar manualmente la disposición de las bolsas y reorganizar los objetos. Haz clic en el botón \"R\" para forzar una actualización completa de todas las bolsas."
+    L["Click to manually refresh the bag layout and reorganize all items."] = "Haz clic para refrescar manualmente la disposición de las bolsas y reorganizar todos los objetos."
     L["Adjust the maximum height of the bags, relative to screen size."] = "Ajustar al maximo la altura de las bolsas, en relación a el tamaño de la pantalla."
     L["Allow you manually redefine the section in which an item should be put. Simply drag an item on the section title."] = "Permite redefinir manualmente la sección en la que un objeto debe situarse. Solo arrastra un objeto dentro del título de la sección"
     L["Always"] = "Siempre"
