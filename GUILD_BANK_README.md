@@ -84,6 +84,14 @@ addon:GetGuildBankItemID(bag, slot)     -- Extracts itemID from link
 3. **Query Delay**: First time opening a tab may have a slight delay while data loads
 4. **Read-Only**: This is by design - prevents accidental reorganization of guild bank
 
+## Personal Bank Compatibility
+
+This implementation has been tested with "Personal Bank" systems on private servers (like Ascension WoW):
+- ✅ Works with Personal Banks that use guild bank API
+- ✅ Handles nil or invalid tab parameters
+- ✅ Defaults to tab 1 when tab information is unavailable
+- ⚠️ May show errors from other addons (like DataStore_Containers) that expect real guild data - these can be safely ignored
+
 ## Future Enhancements (Optional)
 
 - [ ] Multi-tab view (show all viewable tabs at once)
