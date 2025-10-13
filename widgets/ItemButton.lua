@@ -157,20 +157,33 @@ function guildBankButtonProto:OnCreate()
     self:SetScript("OnEnter", self.OnEnter)
     self:SetScript("OnLeave", self.OnLeave)
     self:SetScript("OnClick", self.OnClick)
+
+    -- Set UpdateTooltip to keep refreshing the tooltip
+    self.UpdateTooltip = self.OnEnter
 end
 
 function guildBankButtonProto:OnEnter()
     local tab = addon:GetGuildBankTab(self.bag)
-    if tab and self.slot then
-        GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-        GameTooltip:SetGuildBankItem(tab, self.slot)
+    if not tab or not self.slot then return end
+
+    -- Make sure tooltip stays visible
+    GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+
+    -- Set the guild bank item
+    local success = GameTooltip:SetGuildBankItem(tab, self.slot)
+
+    if success then
         GameTooltip:Show()
-        CursorUpdate(self)
     end
+
+    CursorUpdate(self)
 end
 
 function guildBankButtonProto:OnLeave()
-    GameTooltip:Hide()
+    -- Only hide if this tooltip belongs to this button
+    if GameTooltip:GetOwner() == self then
+        GameTooltip:Hide()
+    end
     ResetCursor()
 end
 
