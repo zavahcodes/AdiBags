@@ -79,35 +79,39 @@ end
 
 local function CreateFakeGuild(DataStore)
 	-- Create a fake guild in DataStore's database
-	-- This tricks DataStore into thinking we're in a guild
+	-- DataStore uses THIS_ACCOUNT = "Default" (see line 18 of DataStore_Containers.lua)
 
 	local realm = GetRealmName()
-	local account = "Default" -- DataStore uses THIS_ACCOUNT which we don't have access to
-
-	-- Try to find the account name in DataStore
-	if DataStore.db and DataStore.db.global then
-		-- Find any existing account key
-		for key, _ in pairs(DataStore.db.global.Guilds or {}) do
-			account = key:match("^([^.]+)")
-			break
-		end
-	end
-
+	local account = "Default"  -- Must match DataStore's THIS_ACCOUNT constant
 	local guildName = "Personal Bank"
 	local guildKey = format("%s.%s.%s", account, realm, guildName)
 
-	-- Initialize guild structure if it doesn't exist
-	if not DataStore.db.global.Guilds then
-		DataStore.db.global.Guilds = {}
+	-- Initialize Guilds table if it doesn't exist
+	if not DataStore.db then
+		addon:Debug('ERROR: DataStore.db is nil!')
+		return nil, nil
 	end
 
+	if not DataStore.db.global then
+		addon:Debug('ERROR: DataStore.db.global is nil!')
+		return nil, nil
+	end
+
+	if not DataStore.db.global.Guilds then
+		DataStore.db.global.Guilds = {}
+		addon:Debug('Created DataStore.db.global.Guilds table')
+	end
+
+	-- Create fake guild if it doesn't exist
 	if not DataStore.db.global.Guilds[guildKey] then
 		DataStore.db.global.Guilds[guildKey] = {
 			Tabs = {},
 			faction = UnitFactionGroup("player"),
 			money = 0,
 		}
-		addon:Debug('Created fake guild:', guildKey)
+		addon:Debug('Created fake guild with key:', guildKey)
+	else
+		addon:Debug('Fake guild already exists with key:', guildKey)
 	end
 
 	local fakeGuild = DataStore.db.global.Guilds[guildKey]
@@ -128,6 +132,8 @@ local function CreateFakeGuild(DataStore)
 			}
 		end
 	end
+
+	addon:Debug('Fake guild has', #fakeGuild.Tabs, 'tabs')
 
 	return fakeGuild, guildKey
 end
@@ -159,16 +165,32 @@ function mod:HookDataStore()
 	local fakeGuildName = "Personal Bank"
 
 	-- Create fake guild structure NOW (not later)
-	CreateFakeGuild(DataStore)
-	addon:Debug('Pre-created fake guild structure')
+	local fakeGuild, fakeGuildKey = CreateFakeGuild(DataStore)
+
+	if fakeGuild then
+		addon:Debug('✓ Fake guild created successfully with key:', fakeGuildKey)
+	else
+		addon:Debug('✗ FAILED to create fake guild!')
+		dataStoreHooked = true
+		return
+	end
 
 	-- Hook GetGuildInfo GLOBALLY to always return fake guild when no real guild exists
-	_G.GetGuildInfo = function(unit)
-		local realGuild = original_GetGuildInfo(unit)
+	_G.GetGuildInfo = function(unit, ...)
+		local realGuild = original_GetGuildInfo(unit, ...)
+
+		-- Debug logging
+		if unit == "player" then
+			if realGuild and realGuild ~= "" then
+				addon:Debug('GetGuildInfo("player") returning REAL guild:', realGuild)
+			else
+				addon:Debug('GetGuildInfo("player") returning FAKE guild:', fakeGuildName)
+			end
+		end
 
 		-- If there's a real guild, return it
 		if realGuild and realGuild ~= "" then
-			return realGuild
+			return realGuild, ...
 		end
 
 		-- If no real guild and we're the player, return fake guild
@@ -178,12 +200,12 @@ function mod:HookDataStore()
 		end
 
 		-- For other units, return original result
-		return realGuild
+		return realGuild, ...
 	end
-	addon:Debug('Hooked GetGuildInfo globally - fake guild always available for player')
+	addon:Debug('✓ Hooked GetGuildInfo globally')
 
 	dataStoreHooked = true
-	addon:Debug('DataStore_Containers fake guild system installed successfully')
+	addon:Debug('✓ DataStore_Containers fake guild system installed successfully')
 end
 
 --------------------------------------------------------------------------------
