@@ -73,8 +73,9 @@ function mod:GUILDBANKFRAME_OPENED(event)
 	-- Query the current tab to ensure we have data
 	QueryGuildBankTab(currentTab)
 
-	-- Trigger bag update for guild bank
-	self:UpdateGuildBank()
+	-- Send update for the current tab's virtual bag
+	local virtualBagId = 100 + currentTab
+	addon:SendMessage('AdiBags_BagUpdated', virtualBagId)
 end
 
 function mod:GUILDBANKFRAME_CLOSED(event)
@@ -90,10 +91,10 @@ function mod:GUILDBANKBAGSLOTS_CHANGED(event, tab, slot)
 
 	addon:Debug('Guild Bank slot changed:', tab, slot)
 
-	-- Only update if it's the current tab
-	if tab == currentTab then
-		self:UpdateGuildBank()
-	end
+	-- Send update for the virtual bag ID corresponding to this tab
+	-- Virtual bag ID = 100 + tab number
+	local virtualBagId = 100 + tab
+	addon:SendMessage('AdiBags_BagUpdated', virtualBagId)
 end
 
 function mod:GUILDBANK_UPDATE_TABS(event)
@@ -102,13 +103,15 @@ function mod:GUILDBANK_UPDATE_TABS(event)
 	addon:Debug('Guild Bank tabs updated')
 	local newTab = GetCurrentGuildBankTab() or currentTab
 
-	-- If tab changed, update all tabs
+	-- If tab changed, query new tab and update
 	if newTab ~= currentTab then
 		currentTab = newTab
 		QueryGuildBankTab(currentTab)
 	end
-
-	self:UpdateGuildBank()
+	
+	-- Send update for the current tab's virtual bag
+	local virtualBagId = 100 + currentTab
+	addon:SendMessage('AdiBags_BagUpdated', virtualBagId)
 end
 
 --------------------------------------------------------------------------------
