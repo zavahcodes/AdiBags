@@ -159,14 +159,15 @@ function mod:HookDataStore()
 		return
 	end
 
-	-- Try to get DataStore_Containers
-	local DSContainers = DataStore:GetModule("DataStore_Containers", true)
+	-- DataStore_Containers is NOT a module of DataStore, it's a separate addon
+	-- Try to get it directly from globals
+	local DSContainers = _G.DataStore_Containers
 	if not DSContainers then
-		print("|cffFF0000[AdiBags DataStoreCompat]|r DataStore_Containers module not found!")
+		print("|cffFF0000[AdiBags DataStoreCompat]|r DataStore_Containers addon not found!")
 		return
 	end
 
-	print("|cff00ff00[AdiBags DataStoreCompat]|r DataStore found, creating fake guild...")
+	print("|cff00ff00[AdiBags DataStoreCompat]|r DataStore_Containers found! Creating fake guild...")
 
 	-- Strategy: Always return fake guild if no real guild exists
 	-- Create fake guild structure IMMEDIATELY so it's ready
@@ -208,9 +209,7 @@ function mod:HookDataStore()
 
 	dataStoreHooked = true
 	print("|cff00ff00[AdiBags DataStoreCompat]|r ✓✓✓ ALL SYSTEMS READY ✓✓✓")
-end
-
---------------------------------------------------------------------------------
+end--------------------------------------------------------------------------------
 -- Options
 --------------------------------------------------------------------------------
 
