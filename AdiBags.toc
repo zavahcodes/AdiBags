@@ -63,6 +63,7 @@ modules\SectionVisibilityDropdown.lua
 modules\RefreshLayout.lua
 modules\ItemLevel.lua
 modules\BankSwitcher.lua
+modules\ProfessionTradeGoods.lua
 
 DefaultFilters.lua
 
