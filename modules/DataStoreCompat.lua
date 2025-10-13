@@ -29,6 +29,8 @@ mod.uiDesc = "Prevents errors in DataStore_Containers when using Personal Bank s
 
 local dataStoreHooked = false
 
+end
+
 --------------------------------------------------------------------------------
 -- Helper function to detect Personal Bank
 --------------------------------------------------------------------------------
@@ -190,6 +192,15 @@ function mod:HookDataStore()
 	_G.GetGuildInfo = function(unit, ...)
 		local realGuild = original_GetGuildInfo(unit, ...)
 
+		-- Debug ALL calls to GetGuildInfo
+		if unit == "player" then
+			if realGuild and realGuild ~= "" then
+				print("|cff00ffff[AdiBags DataStoreCompat]|r GetGuildInfo('player') -> REAL:", realGuild)
+			else
+				print("|cff00ffff[AdiBags DataStoreCompat]|r GetGuildInfo('player') -> FAKE:", fakeGuildName)
+			end
+		end
+
 		-- If there's a real guild, return it
 		if realGuild and realGuild ~= "" then
 			return realGuild, ...
@@ -198,7 +209,6 @@ function mod:HookDataStore()
 		-- If no real guild and we're the player, return fake guild
 		-- This ensures GetThisGuild() always finds something
 		if unit == "player" then
-			print("|cff00ffff[AdiBags DataStoreCompat]|r GetGuildInfo called! Returning:", fakeGuildName)
 			return fakeGuildName
 		end
 
@@ -207,9 +217,22 @@ function mod:HookDataStore()
 	end
 	print("|cff00ff00[AdiBags DataStoreCompat]|r ✓ GetGuildInfo hooked globally")
 
+	-- Also register for guild bank events to see what's happening
+	self:RegisterEvent('GUILDBANKFRAME_OPENED', function()
+		print("|cffFFFF00[AdiBags DataStoreCompat]|r >>> GUILDBANKFRAME_OPENED event fired!")
+		-- Test our GetGuildInfo hook
+		local testResult = GetGuildInfo("player")
+		print("|cffFFFF00[AdiBags DataStoreCompat]|r Test GetGuildInfo result:", testResult or "nil")
+	end)
+	
+	self:RegisterEvent('GUILDBANKBAGSLOTS_CHANGED', function()
+		print("|cffFF8800[AdiBags DataStoreCompat]|r >>> GUILDBANKBAGSLOTS_CHANGED event fired!")
+	end)
+
 	dataStoreHooked = true
 	print("|cff00ff00[AdiBags DataStoreCompat]|r ✓✓✓ ALL SYSTEMS READY ✓✓✓")
-end--------------------------------------------------------------------------------
+end
+--------------------------------------------------------------------------------
 -- Options
 --------------------------------------------------------------------------------
 
