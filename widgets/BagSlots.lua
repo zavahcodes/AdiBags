@@ -208,7 +208,12 @@ local bagButtonClass, bagButtonProto = addon:NewClass("BagSlotButton", "Button",
 
 function bagButtonProto:OnCreate(bag)
 	self.bag = bag
-	self.invSlot = ContainerIDToInventoryID(bag)
+	-- Don't try to get inventory slot for guild bank bags (they don't have one)
+	if not addon:IsGuildBankBag(bag) then
+		self.invSlot = ContainerIDToInventoryID(bag)
+	else
+		self.invSlot = nil
+	end
 
 	self:GetNormalTexture():SetSize(64 * 37 / ITEM_SIZE, 64 * 37 / ITEM_SIZE)
 	self:SetSize(ITEM_SIZE, ITEM_SIZE)
@@ -235,12 +240,23 @@ function bagButtonProto:UpdateLock()
 		SetItemButtonDesaturated(self, true)
 	else
 		self:Enable()
-		SetItemButtonDesaturated(self, IsInventoryItemLocked(self.invSlot))
+		-- Skip lock check for guild bank bags
+		if self.invSlot then
+			SetItemButtonDesaturated(self, IsInventoryItemLocked(self.invSlot))
+		else
+			SetItemButtonDesaturated(self, false)
+		end
 	end
 end
 
 function bagButtonProto:Update()
-	local icon = GetInventoryItemTexture("player", self.invSlot)
+	local icon
+	-- Guild bank bags don't have inventory slots
+	if self.invSlot then
+		icon = GetInventoryItemTexture("player", self.invSlot)
+	else
+		icon = nil
+	end
 	self.hasItem = not not icon
 	if self.hasItem then
 		local total, free = GetContainerNumSlots(self.bag), GetContainerNumFreeSlots(self.bag)
@@ -278,13 +294,18 @@ end
 
 function bagButtonProto:OnEnter()
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-	if not GameTooltip:SetInventoryItem("player", self.invSlot) then
-		if self.tooltipText then
-			GameTooltip:SetText(self.tooltipText)
+	-- Skip for guild bank bags (they don't have inventory slots)
+	if self.invSlot then
+		if not GameTooltip:SetInventoryItem("player", self.invSlot) then
+			if self.tooltipText then
+				GameTooltip:SetText(self.tooltipText)
+			end
+		elseif not self.isEmpty then
+			GameTooltip:AddLine(L['Right-click to try to empty this bag.'])
+			GameTooltip:Show()
 		end
-	elseif not self.isEmpty then
-		GameTooltip:AddLine(L['Right-click to try to empty this bag.'])
-		GameTooltip:Show()
+	elseif self.tooltipText then
+		GameTooltip:SetText(self.tooltipText)
 	end
 	CursorUpdate(self)
 end
@@ -298,6 +319,9 @@ end
 local pendingUpdate = {}
 
 function bagButtonProto:OnClick(button)
+	-- Skip for guild bank bags
+	if not self.invSlot then return end
+
 	if self.hasItem and button == "RightButton" then
 		if not self.isEmpty then
 			EmptyBag(self.bag)
@@ -311,6 +335,9 @@ function bagButtonProto:OnClick(button)
 end
 
 function bagButtonProto:OnDragStart()
+	-- Skip for guild bank bags
+	if not self.invSlot then return end
+
 	if self.hasItem then
 		PickupBagFromSlot(self.invSlot)
 		pendingUpdate[self.invSlot] = true
@@ -324,6 +351,9 @@ function bagButtonProto:BAG_UPDATE(event, bag, ...)
 end
 
 function bagButtonProto:ITEM_LOCK_CHANGED(event, invSlot, containerSlot)
+	-- Skip for guild bank bags
+	if not self.invSlot then return end
+
 	if not (containerSlot and invSlot == self.invSlot) or pendingUpdate[self.invSlot] then
 		return self:Update()
 	end
@@ -446,7 +476,8 @@ function addon:CreateBagSlotPanel(container, name, bags, isBank)
 	local x = BAG_INSET
 	local height = 0
 	for i, bag in ipairs(bags) do
-		if bag ~= KEYRING_CONTAINER and bag ~= BACKPACK_CONTAINER and bag ~= BANK_CONTAINER then
+		-- Skip special bags and guild bank virtual bags (101-108)
+		if bag ~= KEYRING_CONTAINER and bag ~= BACKPACK_CONTAINER and bag ~= BANK_CONTAINER and not addon:IsGuildBankBag(bag) then
 			local button = buttonClass:Create(bag)
 			button:SetParent(self)
 			button:SetPoint("TOPLEFT", x, -TOP_PADDING)
