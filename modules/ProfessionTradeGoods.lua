@@ -19,8 +19,6 @@ local PROFESSIONS = {
     ALCHEMY = L["Alchemy"] or "Alchemy",
     ENGINEERING = L["Engineering"] or "Engineering",
     ENCHANTING = L["Enchanting"] or "Enchanting",
-    JEWELCRAFTING = L["Jewelcrafting"] or "Jewelcrafting",
-    INSCRIPTION = L["Inscription"] or "Inscription",
     COOKING = L["Cooking"] or "Cooking",
     FIRST_AID = L["First Aid"] or "First Aid",
 }
@@ -40,7 +38,7 @@ local PROFESSION_ITEMS = {
         -- Flux, etc
         3466, 3478, 3486, 6260, 17060, 17202, 23436, 23437,
     },
-    
+
     -- TAILORING (Sastrería)
     TAILORING = {
         -- Cloth (Tela)
@@ -52,7 +50,7 @@ local PROFESSION_ITEMS = {
         -- Spider Silk, etc
         4291, 4305, 8343, 14227, 14256, 21840, 21842, 21844, 21845, 38426,
     },
-    
+
     -- LEATHERWORKING (Peletería)
     LEATHERWORKING = {
         -- Leather (Cuero)
@@ -64,7 +62,7 @@ local PROFESSION_ITEMS = {
         -- Thread, Salt
         2320, 2321, 3182, 3824, 4289, 4291, 6260, 14341,
     },
-    
+
     -- ALCHEMY (Alquimia)
     ALCHEMY = {
         -- Herbs (Hierbas)
@@ -76,7 +74,7 @@ local PROFESSION_ITEMS = {
         -- Elemental
         7067, 7068, 7069, 7070, 7071, 7072, 7075, 7076, 7077, 7078, 7079, 7080, 7081, 7082, 12803, 12808, 21884, 21886, 22452, 22451, 35622, 35623, 35624, 35625, 35627, 36860, 37700, 37701, 37702, 37703, 37704, 37705,
     },
-    
+
     -- ENGINEERING (Ingeniería)
     ENGINEERING = {
         -- Explosives (Explosivos)
@@ -86,7 +84,7 @@ local PROFESSION_ITEMS = {
         -- Elemental
         7067, 7068, 7069, 7070, 7071, 7072, 7075, 7076, 7077, 7078, 7079, 7080, 7081, 7082, 12803, 12808,
     },
-    
+
     -- ENCHANTING (Encantamiento)
     ENCHANTING = {
         -- Dust (Polvo)
@@ -100,29 +98,7 @@ local PROFESSION_ITEMS = {
         -- Rods, etc
         6218, 11128, 11144, 11145, 16202, 16203, 16204, 16206, 16207, 17725, 18240, 22461, 22462, 22463, 38682, 38929,
     },
-    
-    -- JEWELCRAFTING (Joyería)
-    JEWELCRAFTING = {
-        -- Raw Gems (Gemas en bruto)
-        23077, 23079, 23107, 23112, 23117, 23436, 23437, 23438, 23439, 23440, 23441, 36917, 36918, 36919, 36920, 36921, 36922, 36923, 36924, 36925, 36926, 36927, 36928, 36929, 36930, 36931, 36932, 36933, 37700, 37701, 37702, 37703, 37704, 37705, 41163,
-        -- Ore for prospecting
-        2770, 2771, 2772, 3858, 10620, 23424, 23425, 36909, 36910, 36912,
-        -- Gems cut
-        -- Note: Cut gems are not trade goods, they're gems
-    },
-    
-    -- INSCRIPTION (Inscripción)
-    INSCRIPTION = {
-        -- Herbs (for milling)
-        765, 785, 2447, 2449, 2450, 2452, 2453, 3355, 3356, 3357, 3358, 3369, 3818, 3819, 3820, 3821, 4625, 8831, 8836, 8838, 8839, 8845, 8846, 13463, 13464, 13465, 13466, 13467, 13468, 22785, 22786, 22787, 22788, 22789, 22790, 22791, 22792, 22793, 36901, 36903, 36904, 36905, 36906, 36907, 37921, 39970,
-        -- Inks (Tintas)
-        37101, 39151, 39334, 39338, 39339, 39340, 39341, 39342, 39343, 39469, 39774, 43116, 43117, 43118, 43119, 43120, 43121, 43122, 43123, 43124, 43125, 43126, 43127,
-        -- Pigments (Pigmentos)
-        39151, 39334, 39338, 39339, 39340, 39341, 39342, 39343, 39469, 39774, 43103, 43104, 43105, 43106, 43107, 43108, 43109,
-        -- Parchment (Pergamino)
-        38682, 39354,
-    },
-    
+
     -- COOKING (Cocina)
     COOKING = {
         -- Meat (Carne)
@@ -132,7 +108,7 @@ local PROFESSION_ITEMS = {
         -- Spices (Especias)
         2321, 2324, 2325, 2604, 2605, 2678, 2692, 2723, 2724, 2725, 2771, 3182, 3404, 3466, 3713, 3827, 4289, 4399, 4400, 4402, 4404, 5469, 6889, 8150, 8153, 8831, 17194, 17196, 17197, 21153, 30817,
     },
-    
+
     -- FIRST AID (Primeros Auxilios)
     FIRST_AID = {
         -- Cloth for bandages
@@ -184,7 +160,7 @@ function filter:Filter(slotData)
 
     -- Check if item belongs to a profession
     local profession = itemToProfession[itemID]
-    
+
     if profession then
         local professionName = PROFESSIONS[profession]
         return professionName, TRADE_GOODS
