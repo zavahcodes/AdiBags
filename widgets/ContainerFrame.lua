@@ -928,14 +928,36 @@ function containerProto:UpdateContent(bag)
 				end
 
 				local name, count, quality, iLevel, reqLevel, class, subclass, maxStack, equipSlot, texture, vendorPrice
-				if link then
-					name, _, quality, iLevel, reqLevel, class, subclass, maxStack, equipSlot, texture, vendorPrice = GetItemInfo(link)
-					if isGuildBank then
-						local _, itemCount = addon:GetGuildBankItemInfo(bag, slot)
-						count = itemCount or 0
-					else
-						count = select(2, GetContainerItemInfo(bag, slot)) or 0
+
+				if isGuildBank and itemId then
+					-- For guild bank, always get texture and count from guild bank API first
+					local gbTexture, itemCount = addon:GetGuildBankItemInfo(bag, slot)
+					texture = gbTexture
+					count = itemCount or 1
+
+					-- Then try to get additional info from item cache if available
+					if link then
+						local itemName, _, itemQuality, itemILevel, itemReqLevel, itemClass, itemSubclass, itemMaxStack, itemEquipSlot, itemTexture, itemVendorPrice = GetItemInfo(link)
+						if itemName then
+							name = itemName
+							quality = itemQuality
+							iLevel = itemILevel
+							reqLevel = itemReqLevel
+							class = itemClass
+							subclass = itemSubclass
+							maxStack = itemMaxStack
+							equipSlot = itemEquipSlot
+							vendorPrice = itemVendorPrice
+							-- Use item cache texture if available and valid
+							if itemTexture then
+								texture = itemTexture
+							end
+						end
 					end
+				elseif link then
+					-- Normal bags
+					name, _, quality, iLevel, reqLevel, class, subclass, maxStack, equipSlot, texture, vendorPrice = GetItemInfo(link)
+					count = select(2, GetContainerItemInfo(bag, slot)) or 0
 				else
 					link, count = false, 0
 				end

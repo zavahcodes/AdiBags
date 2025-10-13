@@ -269,11 +269,22 @@ end
 
 function buttonProto:FullUpdate()
     local bag, slot = self.bag, self.slot
-    self.itemId = GetContainerItemID(bag, slot)
-    self.itemLink = GetContainerItemLink(bag, slot)
-    self.hasItem = not not self.itemId
-    self.texture = GetContainerItemInfo(bag, slot)
-    self.bagFamily = bag == KEYRING_CONTAINER and 256 or select(2, GetContainerNumFreeSlots(bag))
+
+    -- Check if this is a guild bank bag
+    if addon:IsGuildBankBag(bag) then
+        self.itemId = addon:GetGuildBankItemID(bag, slot)
+        self.itemLink = addon:GetGuildBankItemLink(bag, slot)
+        self.hasItem = not not self.itemId
+        self.texture = addon:GetGuildBankItemInfo(bag, slot)
+        self.bagFamily = 0  -- Guild bank has no family restrictions
+    else
+        self.itemId = GetContainerItemID(bag, slot)
+        self.itemLink = GetContainerItemLink(bag, slot)
+        self.hasItem = not not self.itemId
+        self.texture = GetContainerItemInfo(bag, slot)
+        self.bagFamily = bag == KEYRING_CONTAINER and 256 or select(2, GetContainerNumFreeSlots(bag))
+    end
+
     self:Update()
 end
 
