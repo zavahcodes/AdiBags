@@ -89,41 +89,63 @@ function mod:HookDataStore()
 		return
 	end
 
-	-- Strategy: Intercept the events BEFORE they reach DataStore_Containers
-	-- Register our own handlers with higher priority (register first)
+	-- Strategy: Hook the event handlers directly and wrap them with error protection
+	-- This is more reliable than trying to unregister/register events
 
-	-- Hook GUILDBANKFRAME_OPENED to detect Personal Bank
-	self:RegisterEvent('GUILDBANKFRAME_OPENED', function()
-		if IsPersonalBank() then
-			addon:Debug('Personal Bank detected - blocking DataStore_Containers events')
-			-- Temporarily unregister DataStore's problematic events
-			if DSContainers.GUILDBANKBAGSLOTS_CHANGED then
-				DSContainers:UnregisterEvent("GUILDBANKBAGSLOTS_CHANGED")
-				addon:Debug('Unregistered DataStore GUILDBANKBAGSLOTS_CHANGED')
-			end
-			if DSContainers.GUILDBANK_UPDATE_TABS then
-				DSContainers:UnregisterEvent("GUILDBANK_UPDATE_TABS")
-				addon:Debug('Unregistered DataStore GUILDBANK_UPDATE_TABS')
-			end
-		end
-	end)
+	-- Save original handlers
+	local original_GUILDBANKFRAME_OPENED = DSContainers.GUILDBANKFRAME_OPENED
+	local original_GUILDBANKBAGSLOTS_CHANGED = DSContainers.GUILDBANKBAGSLOTS_CHANGED
+	local original_GUILDBANK_UPDATE_TABS = DSContainers.GUILDBANK_UPDATE_TABS
 
-	-- Hook GUILDBANKFRAME_CLOSED to re-enable DataStore
-	self:RegisterEvent('GUILDBANKFRAME_CLOSED', function()
-		-- Re-register DataStore events
-		if DSContainers.GUILDBANKBAGSLOTS_CHANGED then
-			DSContainers:RegisterEvent("GUILDBANKBAGSLOTS_CHANGED")
-			addon:Debug('Re-registered DataStore GUILDBANKBAGSLOTS_CHANGED')
+	-- Replace GUILDBANKFRAME_OPENED with protected version
+	if original_GUILDBANKFRAME_OPENED then
+		DSContainers.GUILDBANKFRAME_OPENED = function(self, event, ...)
+			if IsPersonalBank() then
+				addon:Debug('Personal Bank detected - skipping DataStore GUILDBANKFRAME_OPENED')
+				return
+			end
+			return original_GUILDBANKFRAME_OPENED(self, event, ...)
 		end
-		if DSContainers.GUILDBANK_UPDATE_TABS then
-			DSContainers:RegisterEvent("GUILDBANK_UPDATE_TABS")
-			addon:Debug('Re-registered DataStore GUILDBANK_UPDATE_TABS')
+		addon:Debug('Protected DataStore_Containers.GUILDBANKFRAME_OPENED')
+	end
+
+	-- Replace GUILDBANKBAGSLOTS_CHANGED with protected version
+	if original_GUILDBANKBAGSLOTS_CHANGED then
+		DSContainers.GUILDBANKBAGSLOTS_CHANGED = function(self, event, ...)
+			if IsPersonalBank() then
+				addon:Debug('Personal Bank detected - skipping DataStore GUILDBANKBAGSLOTS_CHANGED')
+				return
+			end
+			-- Wrap in pcall for extra safety
+			local success, err = pcall(original_GUILDBANKBAGSLOTS_CHANGED, self, event, ...)
+			if not success then
+				addon:Debug('Error in DataStore GUILDBANKBAGSLOTS_CHANGED:', err)
+			end
 		end
-	end)
+		addon:Debug('Protected DataStore_Containers.GUILDBANKBAGSLOTS_CHANGED')
+	end
+
+	-- Replace GUILDBANK_UPDATE_TABS with protected version
+	if original_GUILDBANK_UPDATE_TABS then
+		DSContainers.GUILDBANK_UPDATE_TABS = function(self, event, ...)
+			if IsPersonalBank() then
+				addon:Debug('Personal Bank detected - skipping DataStore GUILDBANK_UPDATE_TABS')
+				return
+			end
+			-- Wrap in pcall for extra safety
+			local success, err = pcall(original_GUILDBANK_UPDATE_TABS, self, event, ...)
+			if not success then
+				addon:Debug('Error in DataStore GUILDBANK_UPDATE_TABS:', err)
+			end
+		end
+		addon:Debug('Protected DataStore_Containers.GUILDBANK_UPDATE_TABS')
+	end
 
 	dataStoreHooked = true
-	addon:Debug('DataStore_Containers compatibility hooks installed successfully')
-end--------------------------------------------------------------------------------
+	addon:Debug('DataStore_Containers event handlers wrapped successfully')
+end
+
+--------------------------------------------------------------------------------
 -- Options
 --------------------------------------------------------------------------------
 
