@@ -225,4 +225,56 @@ function mod:SetupTooltip(tooltip, tab, slot)
 	tooltip:SetGuildBankItem(tab, slot)
 end
 
+--------------------------------------------------------------------------------
+-- Hide original Guild Bank frame
+--------------------------------------------------------------------------------
+
+-- Function to hide the original guild bank frame
+local function HideOriginalGuildBankFrame()
+	-- Hide the main guild bank frame
+	if GuildBankFrame then
+		GuildBankFrame:Hide()
+	end
+
+	-- Also hide any related frames that might appear
+	if GuildBankTabButton1 then
+		for i = 1, 8 do
+			local tabButton = _G["GuildBankTabButton" .. i]
+			if tabButton then
+				tabButton:Hide()
+			end
+		end
+	end
+end
+
+-- Hook into the guild bank opening to hide the original frame
+local originalGuildBankFrame_OnEvent = nil
+if GuildBankFrame and GuildBankFrame:GetScript("OnEvent") then
+	originalGuildBankFrame_OnEvent = GuildBankFrame:GetScript("OnEvent")
+	GuildBankFrame:SetScript("OnEvent", function(self, event, ...)
+		if event == "GUILDBANKFRAME_OPENED" then
+			-- Call original handler first
+			if originalGuildBankFrame_OnEvent then
+				originalGuildBankFrame_OnEvent(self, event, ...)
+			end
+			-- Then hide the frame
+			HideOriginalGuildBankFrame()
+		else
+			-- Call original handler for other events
+			if originalGuildBankFrame_OnEvent then
+				originalGuildBankFrame_OnEvent(self, event, ...)
+			end
+		end
+	end)
+end
+
+-- Alternative approach: Hook the frame show function
+if GuildBankFrame then
+	local originalShow = GuildBankFrame.Show
+	GuildBankFrame.Show = function(self)
+		-- Don't show the original frame
+		addon:Debug('Blocked original Guild Bank frame from showing')
+	end
+end
+
 addon:Debug('GuildBank module loaded')

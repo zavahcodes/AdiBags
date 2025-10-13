@@ -45,22 +45,18 @@ end
 --------------------------------------------------------------------------------
 
 function mod:OnEnable()
-	print("|cff00ff00[AdiBags DataStoreCompat]|r Module enabled")
-
 	-- Check if DataStore_Containers is loaded
 	if IsAddOnLoaded("DataStore_Containers") then
-		print("|cff00ff00[AdiBags DataStoreCompat]|r DataStore_Containers already loaded, hooking now...")
 		-- Call directly without timer
 		self:HookDataStore()
 	else
-		print("|cffFFFF00[AdiBags DataStoreCompat]|r DataStore_Containers not loaded yet, waiting...")
 		-- Wait for it to load
 		self:RegisterEvent('ADDON_LOADED')
 	end
 end
 
 function mod:OnDisable()
-	print("|cffFF0000[AdiBags DataStoreCompat]|r Module disabled")
+	-- Module disabled
 end
 
 --------------------------------------------------------------------------------
@@ -69,14 +65,11 @@ end
 
 function mod:ADDON_LOADED(event, loadedAddon)
 	if loadedAddon == "DataStore_Containers" and not dataStoreHooked then
-		print("|cff00ff00[AdiBags DataStoreCompat]|r DataStore_Containers loaded, hooking now...")
 		-- Call directly without timer
 		self:HookDataStore()
 		self:UnregisterEvent('ADDON_LOADED')
 	end
-end
-
---------------------------------------------------------------------------------
+end--------------------------------------------------------------------------------
 -- Helper to create fake guild for Personal Bank
 --------------------------------------------------------------------------------
 
@@ -89,22 +82,17 @@ local function CreateFakeGuild(DataStore)
 	local guildName = "Personal Bank"
 	local guildKey = format("%s.%s.%s", account, realm, guildName)
 
-	print("|cffFFFF00[AdiBags DataStoreCompat]|r Creating fake guild with key:", guildKey)
-
 	-- Initialize Guilds table if it doesn't exist
 	if not DataStore.db then
-		print("|cffFF0000[AdiBags DataStoreCompat]|r ERROR: DataStore.db is nil!")
 		return nil, nil
 	end
 
 	if not DataStore.db.global then
-		print("|cffFF0000[AdiBags DataStoreCompat]|r ERROR: DataStore.db.global is nil!")
 		return nil, nil
 	end
 
 	if not DataStore.db.global.Guilds then
 		DataStore.db.global.Guilds = {}
-		print("|cff00ff00[AdiBags DataStoreCompat]|r Created DataStore.db.global.Guilds table")
 	end
 
 	-- Create fake guild if it doesn't exist
@@ -114,9 +102,6 @@ local function CreateFakeGuild(DataStore)
 			faction = UnitFactionGroup("player"),
 			money = 0,
 		}
-		print("|cff00ff00[AdiBags DataStoreCompat]|r Created NEW fake guild")
-	else
-		print("|cffFFFF00[AdiBags DataStoreCompat]|r Fake guild already exists")
 	end
 
 	local fakeGuild = DataStore.db.global.Guilds[guildKey]
@@ -124,7 +109,6 @@ local function CreateFakeGuild(DataStore)
 	-- Ensure Tabs table exists (it might be corrupted if guild already existed)
 	if not fakeGuild.Tabs then
 		fakeGuild.Tabs = {}
-		print("|cffFFFF00[AdiBags DataStoreCompat]|r Tabs table was nil, creating new one")
 	end
 
 	-- Create 8 empty tabs
@@ -144,15 +128,6 @@ local function CreateFakeGuild(DataStore)
 		end
 	end
 
-	-- Safe count of tabs
-	local tabCount = 0
-	for i = 1, 8 do
-		if fakeGuild.Tabs[i] then
-			tabCount = tabCount + 1
-		end
-	end
-	print("|cff00ff00[AdiBags DataStoreCompat]|r Fake guild has", tabCount, "tabs initialized")
-
 	return fakeGuild, guildKey
 end
 
@@ -162,13 +137,11 @@ end
 
 function mod:HookDataStore()
 	if dataStoreHooked then
-		print("|cffFFFF00[AdiBags DataStoreCompat]|r Already hooked, skipping")
 		return
 	end
 
 	local DataStore = _G.DataStore
 	if not DataStore then
-		print("|cffFF0000[AdiBags DataStoreCompat]|r DataStore not found!")
 		return
 	end
 
@@ -176,11 +149,8 @@ function mod:HookDataStore()
 	-- Try to get it directly from globals
 	local DSContainers = _G.DataStore_Containers
 	if not DSContainers then
-		print("|cffFF0000[AdiBags DataStoreCompat]|r DataStore_Containers addon not found!")
 		return
 	end
-
-	print("|cff00ff00[AdiBags DataStoreCompat]|r DataStore_Containers found! Creating fake guild...")
 
 	-- Strategy: Always return fake guild if no real guild exists
 	-- Create fake guild structure IMMEDIATELY so it's ready
@@ -191,10 +161,7 @@ function mod:HookDataStore()
 	-- Create fake guild structure NOW (not later)
 	local fakeGuild, fakeGuildKey = CreateFakeGuild(DataStore)
 
-	if fakeGuild then
-		print("|cff00ff00[AdiBags DataStoreCompat]|r ✓ Fake guild SUCCESS! Key:", fakeGuildKey)
-	else
-		print("|cffFF0000[AdiBags DataStoreCompat]|r ✗ FAILED to create fake guild!")
+	if not fakeGuild then
 		dataStoreHooked = true
 		return
 	end
@@ -219,10 +186,8 @@ function mod:HookDataStore()
 		-- For other units, return original result
 		return realGuild, ...
 	end
-	print("|cff00ff00[AdiBags DataStoreCompat]|r ✓ GetGuildInfo hooked globally")
 
-	-- Success! DataStore_Containers compatibility is working	dataStoreHooked = true
-	print("|cff00ff00[AdiBags DataStoreCompat]|r ✓✓✓ ALL SYSTEMS READY ✓✓✓")
+	dataStoreHooked = true
 end
 --------------------------------------------------------------------------------
 -- Options
@@ -253,4 +218,4 @@ function mod:GetOptions()
 	}, addon:GetOptionHandler(self)
 end
 
-print("|cff00ff00[AdiBags DataStoreCompat]|r Module file loaded")
+-- Module loaded silently
