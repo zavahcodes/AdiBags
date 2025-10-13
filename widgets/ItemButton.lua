@@ -8,10 +8,14 @@ local addonName, addon = ...
 
 --<GLOBALS
 local _G = _G
+local AutoStoreGuildBankItem = _G.AutoStoreGuildBankItem
 local BankButtonIDToInvSlotID = _G.BankButtonIDToInvSlotID
 local BANK_CONTAINER = _G.BANK_CONTAINER
 local ContainerFrame_UpdateCooldown = _G.ContainerFrame_UpdateCooldown
+local CursorHasItem = _G.CursorHasItem
+local CursorUpdate = _G.CursorUpdate
 local format = _G.format
+local GameTooltip = _G.GameTooltip
 local GetContainerItemID = _G.GetContainerItemID
 local GetContainerItemInfo = _G.GetContainerItemInfo
 local GetContainerItemLink = _G.GetContainerItemLink
@@ -20,11 +24,14 @@ local GetContainerNumFreeSlots = _G.GetContainerNumFreeSlots
 local GetItemInfo = _G.GetItemInfo
 local GetItemQualityColor = _G.GetItemQualityColor
 local IsInventoryItemLocked = _G.IsInventoryItemLocked
+local IsModifiedClick = _G.IsModifiedClick
 local ITEM_QUALITY_POOR = _G.ITEM_QUALITY_POOR
 local ITEM_QUALITY_UNCOMMON = _G.ITEM_QUALITY_UNCOMMON
 local KEYRING_CONTAINER = _G.KEYRING_CONTAINER
 local next = _G.next
 local pairs = _G.pairs
+local PickupGuildBankItem = _G.PickupGuildBankItem
+local ResetCursor = _G.ResetCursor
 local select = _G.select
 local SetItemButtonDesaturated = _G.SetItemButtonDesaturated
 local StackSplitFrame = _G.StackSplitFrame
@@ -138,14 +145,78 @@ function bankButtonProto:IsLocked()
 end
 
 --------------------------------------------------------------------------------
+-- Guild Bank button sub-type
+--------------------------------------------------------------------------------
+
+local guildBankButtonClass, guildBankButtonProto = addon:NewClass("GuildBankItemButton", "ItemButton")
+
+function guildBankButtonProto:OnCreate()
+    buttonProto.OnCreate(self)
+
+    -- Override the scripts to handle guild bank properly
+    self:SetScript("OnEnter", self.OnEnter)
+    self:SetScript("OnLeave", self.OnLeave)
+    self:SetScript("OnClick", self.OnClick)
+end
+
+function guildBankButtonProto:OnEnter()
+    local tab = addon:GetGuildBankTab(self.bag)
+    if tab and self.slot then
+        GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+        GameTooltip:SetGuildBankItem(tab, self.slot)
+        GameTooltip:Show()
+        CursorUpdate(self)
+    end
+end
+
+function guildBankButtonProto:OnLeave()
+    GameTooltip:Hide()
+    ResetCursor()
+end
+
+function guildBankButtonProto:OnClick(button)
+    local tab = addon:GetGuildBankTab(self.bag)
+    if not tab then return end
+
+    -- Handle different click types
+    if button == "LeftButton" then
+        if IsModifiedClick("SPLITSTACK") then
+            -- Split stack
+            local texture, count = addon:GetGuildBankItemInfo(self.bag, self.slot)
+            if count and count > 1 then
+                StackSplitFrame:OpenStackSplitFrame(count, self, "BOTTOMLEFT", "TOPLEFT")
+            end
+        else
+            -- Normal pickup
+            PickupGuildBankItem(tab, self.slot)
+        end
+    elseif button == "RightButton" then
+        -- Auto-loot to bag
+        if CursorHasItem() then
+            PickupGuildBankItem(tab, self.slot)
+        else
+            AutoStoreGuildBankItem(tab, self.slot)
+        end
+    end
+end
+
+function guildBankButtonProto:IsLocked()
+    local _, _, locked = addon:GetGuildBankItemInfo(self.bag, self.slot)
+    return locked
+end
+
+--------------------------------------------------------------------------------
 -- Pools and acquistion
 --------------------------------------------------------------------------------
 
 local containerButtonPool = addon:CreatePool(buttonClass)
 local bankButtonPool = addon:CreatePool(bankButtonClass)
+local guildBankButtonPool = addon:CreatePool(guildBankButtonClass)
 
 function addon:AcquireItemButton(container, bag, slot)
-    if bag == BANK_CONTAINER then
+    if addon:IsGuildBankBag(bag) then
+        return guildBankButtonPool:Acquire(container, bag, slot)
+    elseif bag == BANK_CONTAINER then
         return bankButtonPool:Acquire(container, bag, slot)
     else
         return containerButtonPool:Acquire(container, bag, slot)
