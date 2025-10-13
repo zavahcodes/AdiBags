@@ -16,6 +16,10 @@ local IsAddOnLoaded = _G.IsAddOnLoaded
 local pcall = _G.pcall
 local GetNumGuildMembers = _G.GetNumGuildMembers
 local GetGuildInfo = _G.GetGuildInfo
+local GetRealmName = _G.GetRealmName
+local UnitName = _G.UnitName
+local UnitFactionGroup = _G.UnitFactionGroup
+local format = _G.format
 --GLOBALS>
 
 -- Create the module
@@ -70,6 +74,65 @@ function mod:ADDON_LOADED(event, loadedAddon)
 end
 
 --------------------------------------------------------------------------------
+-- Helper to create fake guild for Personal Bank
+--------------------------------------------------------------------------------
+
+local function CreateFakeGuild(DataStore)
+	-- Create a fake guild in DataStore's database
+	-- This tricks DataStore into thinking we're in a guild
+
+	local realm = GetRealmName()
+	local account = "Default" -- DataStore uses THIS_ACCOUNT which we don't have access to
+
+	-- Try to find the account name in DataStore
+	if DataStore.db and DataStore.db.global then
+		-- Find any existing account key
+		for key, _ in pairs(DataStore.db.global.Guilds or {}) do
+			account = key:match("^([^.]+)")
+			break
+		end
+	end
+
+	local guildName = "Personal Bank"
+	local guildKey = format("%s.%s.%s", account, realm, guildName)
+
+	-- Initialize guild structure if it doesn't exist
+	if not DataStore.db.global.Guilds then
+		DataStore.db.global.Guilds = {}
+	end
+
+	if not DataStore.db.global.Guilds[guildKey] then
+		DataStore.db.global.Guilds[guildKey] = {
+			Tabs = {},
+			faction = UnitFactionGroup("player"),
+			money = 0,
+		}
+		addon:Debug('Created fake guild:', guildKey)
+	end
+
+	local fakeGuild = DataStore.db.global.Guilds[guildKey]
+
+	-- Create 8 empty tabs
+	for i = 1, 8 do
+		if not fakeGuild.Tabs[i] then
+			fakeGuild.Tabs[i] = {
+				name = "Tab " .. i,
+				icon = "Interface\\Icons\\INV_Misc_QuestionMark",
+				visitedBy = UnitName("player"),
+				ClientTime = 0,
+				ClientDate = "",
+				ClientHour = 0,
+				ClientMinute = 0,
+				ServerHour = 0,
+				ServerMinute = 0,
+			}
+		end
+	end
+
+	return fakeGuild, guildKey
+end
+
+--------------------------------------------------------------------------------
 -- DataStore hooking
 --------------------------------------------------------------------------------
 
@@ -89,60 +152,45 @@ function mod:HookDataStore()
 		return
 	end
 
-	-- Strategy: Hook the event handlers directly and wrap them with error protection
-	-- This is more reliable than trying to unregister/register events
+	-- Strategy: Hook GetGuildInfo to return fake guild name for Personal Bank
+	-- This makes GetThisGuild() return our fake guild instead of nil
 
-	-- Save original handlers
-	local original_GUILDBANKFRAME_OPENED = DSContainers.GUILDBANKFRAME_OPENED
-	local original_GUILDBANKBAGSLOTS_CHANGED = DSContainers.GUILDBANKBAGSLOTS_CHANGED
-	local original_GUILDBANK_UPDATE_TABS = DSContainers.GUILDBANK_UPDATE_TABS
+	local original_GetGuildInfo = _G.GetGuildInfo
+	local fakeGuildName = "Personal Bank"
+	local inPersonalBank = false
 
-	-- Replace GUILDBANKFRAME_OPENED with protected version
-	if original_GUILDBANKFRAME_OPENED then
-		DSContainers.GUILDBANKFRAME_OPENED = function(self, event, ...)
-			if IsPersonalBank() then
-				addon:Debug('Personal Bank detected - skipping DataStore GUILDBANKFRAME_OPENED')
-				return
-			end
-			return original_GUILDBANKFRAME_OPENED(self, event, ...)
+	_G.GetGuildInfo = function(unit)
+		-- If we're in a Personal Bank, return fake guild name
+		if unit == "player" and inPersonalBank then
+			return fakeGuildName
 		end
-		addon:Debug('Protected DataStore_Containers.GUILDBANKFRAME_OPENED')
+		-- Otherwise call original
+		return original_GetGuildInfo(unit)
 	end
+	addon:Debug('Hooked GetGuildInfo to return fake guild for Personal Bank')
 
-	-- Replace GUILDBANKBAGSLOTS_CHANGED with protected version
-	if original_GUILDBANKBAGSLOTS_CHANGED then
-		DSContainers.GUILDBANKBAGSLOTS_CHANGED = function(self, event, ...)
-			if IsPersonalBank() then
-				addon:Debug('Personal Bank detected - skipping DataStore GUILDBANKBAGSLOTS_CHANGED')
-				return
-			end
-			-- Wrap in pcall for extra safety
-			local success, err = pcall(original_GUILDBANKBAGSLOTS_CHANGED, self, event, ...)
-			if not success then
-				addon:Debug('Error in DataStore GUILDBANKBAGSLOTS_CHANGED:', err)
-			end
+	-- Hook GUILDBANKFRAME_OPENED to detect Personal Bank and create fake guild
+	self:RegisterEvent('GUILDBANKFRAME_OPENED', function()
+		if IsPersonalBank() then
+			addon:Debug('Personal Bank detected - activating fake guild')
+			inPersonalBank = true
+			-- Create the fake guild structure
+			CreateFakeGuild(DataStore)
+		else
+			inPersonalBank = false
 		end
-		addon:Debug('Protected DataStore_Containers.GUILDBANKBAGSLOTS_CHANGED')
-	end
+	end)
 
-	-- Replace GUILDBANK_UPDATE_TABS with protected version
-	if original_GUILDBANK_UPDATE_TABS then
-		DSContainers.GUILDBANK_UPDATE_TABS = function(self, event, ...)
-			if IsPersonalBank() then
-				addon:Debug('Personal Bank detected - skipping DataStore GUILDBANK_UPDATE_TABS')
-				return
-			end
-			-- Wrap in pcall for extra safety
-			local success, err = pcall(original_GUILDBANK_UPDATE_TABS, self, event, ...)
-			if not success then
-				addon:Debug('Error in DataStore GUILDBANK_UPDATE_TABS:', err)
-			end
+	-- Hook GUILDBANKFRAME_CLOSED to disable fake guild
+	self:RegisterEvent('GUILDBANKFRAME_CLOSED', function()
+		if inPersonalBank then
+			addon:Debug('Disabling fake guild')
+			inPersonalBank = false
 		end
-		addon:Debug('Protected DataStore_Containers.GUILDBANK_UPDATE_TABS')
-	end
+	end)
 
 	dataStoreHooked = true
-	addon:Debug('DataStore_Containers event handlers wrapped successfully')
+	addon:Debug('DataStore_Containers fake guild system installed successfully')
 end
 
 --------------------------------------------------------------------------------
