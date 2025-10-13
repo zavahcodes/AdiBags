@@ -152,42 +152,35 @@ function mod:HookDataStore()
 		return
 	end
 
-	-- Strategy: Hook GetGuildInfo to return fake guild name for Personal Bank
-	-- This makes GetThisGuild() return our fake guild instead of nil
+	-- Strategy: Always return fake guild if no real guild exists
+	-- Create fake guild structure IMMEDIATELY so it's ready
 
-	local original_GetGuildInfo = _G.GetGuildInfo
+	local original_GetGuildInfo = GetGuildInfo
 	local fakeGuildName = "Personal Bank"
-	local inPersonalBank = false
 
+	-- Create fake guild structure NOW (not later)
+	CreateFakeGuild(DataStore)
+	addon:Debug('Pre-created fake guild structure')
+
+	-- Hook GetGuildInfo GLOBALLY to always return fake guild when no real guild exists
 	_G.GetGuildInfo = function(unit)
-		-- If we're in a Personal Bank, return fake guild name
-		if unit == "player" and inPersonalBank then
+		local realGuild = original_GetGuildInfo(unit)
+
+		-- If there's a real guild, return it
+		if realGuild and realGuild ~= "" then
+			return realGuild
+		end
+
+		-- If no real guild and we're the player, return fake guild
+		-- This ensures GetThisGuild() always finds something
+		if unit == "player" then
 			return fakeGuildName
 		end
-		-- Otherwise call original
-		return original_GetGuildInfo(unit)
+
+		-- For other units, return original result
+		return realGuild
 	end
-	addon:Debug('Hooked GetGuildInfo to return fake guild for Personal Bank')
-
-	-- Hook GUILDBANKFRAME_OPENED to detect Personal Bank and create fake guild
-	self:RegisterEvent('GUILDBANKFRAME_OPENED', function()
-		if IsPersonalBank() then
-			addon:Debug('Personal Bank detected - activating fake guild')
-			inPersonalBank = true
-			-- Create the fake guild structure
-			CreateFakeGuild(DataStore)
-		else
-			inPersonalBank = false
-		end
-	end)
-
-	-- Hook GUILDBANKFRAME_CLOSED to disable fake guild
-	self:RegisterEvent('GUILDBANKFRAME_CLOSED', function()
-		if inPersonalBank then
-			addon:Debug('Disabling fake guild')
-			inPersonalBank = false
-		end
-	end)
+	addon:Debug('Hooked GetGuildInfo globally - fake guild always available for player')
 
 	dataStoreHooked = true
 	addon:Debug('DataStore_Containers fake guild system installed successfully')
