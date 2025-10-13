@@ -22,6 +22,9 @@ local GetContainerItemLink = _G.GetContainerItemLink
 local GetContainerNumFreeSlots = _G.GetContainerNumFreeSlots
 local GetContainerNumSlots = _G.GetContainerNumSlots
 local GetCursorInfo = _G.GetCursorInfo
+local GetGuildBankItemInfo = _G.GetGuildBankItemInfo
+local GetGuildBankItemLink = _G.GetGuildBankItemLink
+local GetGuildBankTabInfo = _G.GetGuildBankTabInfo
 local GetItemFamily = _G.GetItemFamily
 local GetItemInfo = _G.GetItemInfo
 local GetMerchantItemLink = _G.GetMerchantItemLink
@@ -870,12 +873,30 @@ function containerProto:UpdateContent(bag)
 	self:Debug('UpdateContent', bag)
 	local added, removed, changed = self.added, self.removed, self.changed
 	local content = self.content[bag]
-	local newSize = GetContainerNumSlots(bag)
-	local _, bagFamily = GetContainerNumFreeSlots(bag)
-	bagFamily = bag == KEYRING_CONTAINER and 256 or bagFamily
+	
+	-- Check if this is a Guild Bank bag
+	local isGuildBank = addon:IsGuildBankBag(bag)
+	local newSize
+	local bagFamily
+	
+	if isGuildBank then
+		newSize = addon:GetGuildBankNumSlots(bag)
+		bagFamily = 0  -- Guild bank doesn't have family restrictions
+	else
+		newSize = GetContainerNumSlots(bag)
+		_, bagFamily = GetContainerNumFreeSlots(bag)
+		bagFamily = bag == KEYRING_CONTAINER and 256 or bagFamily
+	end
+	
 	content.family = bagFamily
+	
 	for slot = 1, newSize do
-		local itemId = GetContainerItemID(bag, slot)
+		local itemId
+		if isGuildBank then
+			itemId = addon:GetGuildBankItemID(bag, slot)
+		else
+			itemId = GetContainerItemID(bag, slot)
+		end
 		-- Explicitly clear empty keyring slots to remove ghost buttons
 		if bag == KEYRING_CONTAINER and not itemId then
 			if content[slot] then
@@ -885,7 +906,13 @@ function containerProto:UpdateContent(bag)
 
 		else
 			-- ✅ Normal item handling logic
-			local link = GetContainerItemLink(bag, slot)
+			local link
+			if isGuildBank then
+				link = addon:GetGuildBankItemLink(bag, slot)
+			else
+				link = GetContainerItemLink(bag, slot)
+			end
+			
 			if not itemId or (link and IsValidItemLink(link)) then
 				local slotData = content[slot]
 				if not slotData then
@@ -903,7 +930,12 @@ function containerProto:UpdateContent(bag)
 				local name, count, quality, iLevel, reqLevel, class, subclass, maxStack, equipSlot, texture, vendorPrice
 				if link then
 					name, _, quality, iLevel, reqLevel, class, subclass, maxStack, equipSlot, texture, vendorPrice = GetItemInfo(link)
-					count = select(2, GetContainerItemInfo(bag, slot)) or 0
+					if isGuildBank then
+						local _, itemCount = addon:GetGuildBankItemInfo(bag, slot)
+						count = itemCount or 0
+					else
+						count = select(2, GetContainerItemInfo(bag, slot)) or 0
+					end
 				else
 					link, count = false, 0
 				end

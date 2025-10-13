@@ -72,12 +72,17 @@ do
 	local BANK = { [BANK_CONTAINER] = BANK_CONTAINER }
 	for i = NUM_BAG_SLOTS + 1, NUM_BAG_SLOTS + NUM_BANKBAGSLOTS do BANK[i] = i end
 
+	-- Guild Bank (using virtual bag IDs: 100-107 for tabs 1-8)
+	local GUILD_BANK = {}
+	for i = 1, 8 do GUILD_BANK[100 + i] = i end  -- Virtual bag ID = 100 + tab number
+
 	-- All bags
 	local ALL = {}
 	for id in pairs(BAGS) do ALL[id] = id end
 	for id in pairs(BANK) do ALL[id] = id end
+	for id in pairs(GUILD_BANK) do ALL[id] = id end
 
-	addon.BAG_IDS = { BAGS = BAGS, BANK = BANK, ALL = ALL }
+	addon.BAG_IDS = { BAGS = BAGS, BANK = BANK, GUILD_BANK = GUILD_BANK, ALL = ALL }
 end
 
 local FAMILY_TAGS = {
@@ -915,6 +920,48 @@ do
 end
 
 --------------------------------------------------------------------------------
+-- Guild Bank
+--------------------------------------------------------------------------------
+
+do
+	-- L["Guild Bank"]
+	local guildBank = addon:NewBag("GuildBank", 30, addon.BAG_IDS.GUILD_BANK, false, 'AceHook-3.0')
+
+	function guildBank:PostEnable()
+		self:RegisterMessage('AdiBags_InteractingWindowChanged')
+		self:RegisterMessage('AdiBags_GuildBankUpdated')
+		
+		if addon:GetInteractingWindow() == "GUILDBANKFRAME" then
+			self:Open()
+		end
+	end
+
+	function guildBank:AdiBags_InteractingWindowChanged(event, new, old)
+		if new == 'GUILDBANKFRAME' and not self:IsOpen() then
+			self:Open()
+		elseif old == 'GUILDBANKFRAME' and self:IsOpen() then
+			self:Close()
+		end
+	end
+
+	function guildBank:AdiBags_GuildBankUpdated(event, tab)
+		-- Refresh the guild bank display when data changes
+		if self:IsOpen() then
+			addon:SendMessage('AdiBags_LayoutChanged')
+		end
+	end
+
+	function guildBank:CanOpen()
+		return self:IsEnabled() and addon:GetInteractingWindow() == "GUILDBANKFRAME"
+	end
+
+	function guildBank:PostClose()
+		-- Guild bank doesn't need special cleanup on close
+	end
+
+end
+
+--------------------------------------------------------------------------------
 -- Bag anchor and layout
 --------------------------------------------------------------------------------
 
@@ -1149,6 +1196,76 @@ function filterProto:SetPriority(value)
 		addon.db.profile.filterPriorities[self.filterName] = (value ~= self.priority) and value or nil
 		addon:UpdateFilters()
 	end
+end
+
+--------------------------------------------------------------------------------
+-- Guild Bank helpers
+--------------------------------------------------------------------------------
+
+-- Check if a bag ID is a guild bank virtual bag
+function addon:IsGuildBankBag(bag)
+	return bag >= 101 and bag <= 108
+end
+
+-- Convert virtual bag ID to guild bank tab number
+function addon:GetGuildBankTab(bag)
+	if addon:IsGuildBankBag(bag) then
+		return bag - 100
+	end
+	return nil
+end
+
+-- Get guild bank tab slots count
+function addon:GetGuildBankNumSlots(bag)
+	if not addon:IsGuildBankBag(bag) then
+		return 0
+	end
+	
+	local tab = addon:GetGuildBankTab(bag)
+	if not tab then
+		return 0
+	end
+	
+	-- Check if the tab is viewable
+	local name, _, isViewable = _G.GetGuildBankTabInfo(tab)
+	if not name or not isViewable then
+		return 0
+	end
+	
+	-- Guild bank tabs have 98 slots (7 columns x 14 rows)
+	local MAX_GUILDBANK_SLOTS_PER_TAB = _G.MAX_GUILDBANK_SLOTS_PER_TAB or 98
+	return MAX_GUILDBANK_SLOTS_PER_TAB
+end
+
+-- Get guild bank item info (similar to GetContainerItemInfo)
+function addon:GetGuildBankItemInfo(bag, slot)
+	local tab = addon:GetGuildBankTab(bag)
+	if not tab then
+		return nil
+	end
+	
+	return _G.GetGuildBankItemInfo(tab, slot)
+end
+
+-- Get guild bank item link (similar to GetContainerItemLink)
+function addon:GetGuildBankItemLink(bag, slot)
+	local tab = addon:GetGuildBankTab(bag)
+	if not tab then
+		return nil
+	end
+	
+	return _G.GetGuildBankItemLink(tab, slot)
+end
+
+-- Get guild bank item ID
+function addon:GetGuildBankItemID(bag, slot)
+	local link = addon:GetGuildBankItemLink(bag, slot)
+	if not link then
+		return nil
+	end
+	
+	local itemId = select(3, strfind(link, "item:(%d+)"))
+	return tonumber(itemId)
 end
 
 --------------------------------------------------------------------------------
