@@ -97,6 +97,27 @@ L["Sets"] = true
 L["Split armors by types"] = true
 L["Split by subcategories"] = true
 
+-- ProfessionTradeGoods.lua (modules)
+L["Trade Goods by Profession"] = true
+L["Separates trade goods into sections by profession (Blacksmithing, Tailoring, Leatherworking, etc.)"] = true
+L["Blacksmithing"] = true
+L["Tailoring"] = true
+L["Leatherworking"] = true
+L["Alchemy"] = true
+L["Engineering"] = true
+L["Enchanting"] = true
+L["Jewelcrafting"] = true
+L["Inscription"] = true
+L["Cooking"] = true
+L["First Aid"] = true
+L["Other Trade Goods"] = true
+L["Enable"] = true
+L["Enable profession-based trade goods filtering"] = true
+L["Scan Tooltips"] = true
+L["Scan item tooltips to detect profession. Disable if you experience performance issues."] = true
+L["Group Other Trade Goods"] = true
+L["Put trade goods without a detected profession in an 'Other Trade Goods' section"] = true
+
 -- Options.lua
 L["... including incomplete stacks"] = true
 L["Adjust the maximum height of the bags, relative to screen size."] = true
