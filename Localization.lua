@@ -63,6 +63,7 @@ L["AdiBags Anchor"] = true
 L["Backpack"] = true
 L["Bank"] = true
 L["Guild Bank"] = true
+L["Guild Bank Support"] = true
 L["Display guild bank contents in AdiBags (read-only mode)."] = true
 
 -- DefaultFilters.lua

@@ -932,7 +932,7 @@ do
 	function guildBank:PostEnable()
 		self:RegisterMessage('AdiBags_InteractingWindowChanged')
 		self:RegisterMessage('AdiBags_GuildBankUpdated')
-		
+
 		if addon:GetInteractingWindow() == "GUILDBANKFRAME" then
 			self:Open()
 		end
@@ -1222,18 +1222,18 @@ function addon:GetGuildBankNumSlots(bag)
 	if not addon:IsGuildBankBag(bag) then
 		return 0
 	end
-	
+
 	local tab = addon:GetGuildBankTab(bag)
 	if not tab then
 		return 0
 	end
-	
+
 	-- Check if the tab is viewable
 	local name, _, isViewable = _G.GetGuildBankTabInfo(tab)
 	if not name or not isViewable then
 		return 0
 	end
-	
+
 	-- Guild bank tabs have 98 slots (7 columns x 14 rows)
 	local MAX_GUILDBANK_SLOTS_PER_TAB = _G.MAX_GUILDBANK_SLOTS_PER_TAB or 98
 	return MAX_GUILDBANK_SLOTS_PER_TAB
@@ -1245,7 +1245,7 @@ function addon:GetGuildBankItemInfo(bag, slot)
 	if not tab then
 		return nil
 	end
-	
+
 	return _G.GetGuildBankItemInfo(tab, slot)
 end
 
@@ -1255,7 +1255,7 @@ function addon:GetGuildBankItemLink(bag, slot)
 	if not tab then
 		return nil
 	end
-	
+
 	return _G.GetGuildBankItemLink(tab, slot)
 end
 
@@ -1265,7 +1265,7 @@ function addon:GetGuildBankItemID(bag, slot)
 	if not link then
 		return nil
 	end
-	
+
 	local itemId = select(3, strfind(link, "item:(%d+)"))
 	return tonumber(itemId)
 end
