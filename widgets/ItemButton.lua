@@ -218,6 +218,11 @@ function guildBankButtonProto:IsLocked()
     return locked
 end
 
+function guildBankButtonProto:GetCount()
+    local _, count = addon:GetGuildBankItemInfo(self.bag, self.slot)
+    return count or 0
+end
+
 --------------------------------------------------------------------------------
 -- Pools and acquistion
 --------------------------------------------------------------------------------
