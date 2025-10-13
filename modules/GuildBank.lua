@@ -100,7 +100,14 @@ function mod:GUILDBANK_UPDATE_TABS(event)
 	if not guildBankOpen then return end
 	
 	addon:Debug('Guild Bank tabs updated')
-	currentTab = GetCurrentGuildBankTab() or currentTab
+	local newTab = GetCurrentGuildBankTab() or currentTab
+	
+	-- If tab changed, update all tabs
+	if newTab ~= currentTab then
+		currentTab = newTab
+		QueryGuildBankTab(currentTab)
+	end
+	
 	self:UpdateGuildBank()
 end
 

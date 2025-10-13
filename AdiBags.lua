@@ -156,6 +156,7 @@ local DEFAULT_SETTINGS = {
 			anchor = { point = "BOTTOMRIGHT", xOffset = -111, yOffset = 220 },
 			Backpack = { point = "BOTTOMRIGHT", xOffset = -111, yOffset = 220 },
 			Bank = { point = "TOPLEFT", xOffset = 32, yOffset = -104 },
+			GuildBank = { point = "LEFT", xOffset = 50, yOffset = 0 },
 		},
 		scale = 0.8,
 		rowWidth = { ['*'] = 9 },
@@ -186,6 +187,7 @@ local DEFAULT_SETTINGS = {
 			insets = 3,
 			BackpackColor = { 0, 0, 0, 1 },
 			BankColor = { 0, 0, 0.5, 1 },
+			GuildBankColor = { 0, 0.5, 0, 1 },
 		},
 	},
 	char = {
