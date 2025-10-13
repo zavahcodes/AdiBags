@@ -68,7 +68,14 @@ end
 function mod:GUILDBANKFRAME_OPENED(event)
 	addon:Debug('Guild Bank opened')
 	guildBankOpen = true
-	currentTab = GetCurrentGuildBankTab() or 1
+
+	-- Get current tab, default to 1 if not available (Personal Bank case)
+	local tab = GetCurrentGuildBankTab()
+	if not tab or tab < 1 or tab > 8 then
+		tab = 1
+		addon:Debug('GetCurrentGuildBankTab returned invalid value, defaulting to tab 1')
+	end
+	currentTab = tab
 
 	-- Query the current tab to ensure we have data
 	QueryGuildBankTab(currentTab)
@@ -91,6 +98,16 @@ function mod:GUILDBANKBAGSLOTS_CHANGED(event, tab, slot)
 
 	addon:Debug('Guild Bank slot changed:', tab, slot)
 
+	-- For Personal Bank implementations, tab might be nil
+	-- In that case, use the current tab
+	tab = tab or currentTab
+
+	-- Validate tab number
+	if not tab or tab < 1 or tab > 8 then
+		addon:Debug('Invalid tab number:', tab, '- using currentTab:', currentTab)
+		tab = currentTab
+	end
+
 	-- Send update for the virtual bag ID corresponding to this tab
 	-- Virtual bag ID = 100 + tab number
 	local virtualBagId = 100 + tab
@@ -101,14 +118,22 @@ function mod:GUILDBANK_UPDATE_TABS(event)
 	if not guildBankOpen then return end
 
 	addon:Debug('Guild Bank tabs updated')
-	local newTab = GetCurrentGuildBankTab() or currentTab
+	local newTab = GetCurrentGuildBankTab()
 
-	-- If tab changed, query new tab and update
-	if newTab ~= currentTab then
+	-- For Personal Banks, GetCurrentGuildBankTab might return nil
+	-- In that case, keep using the current tab (default to 1)
+	if newTab and newTab >= 1 and newTab <= 8 then
 		currentTab = newTab
+	elseif not currentTab or currentTab < 1 or currentTab > 8 then
+		-- Ensure we always have a valid tab
+		currentTab = 1
+	end
+
+	-- Query tab if we have a valid one
+	if currentTab and currentTab >= 1 and currentTab <= 8 then
 		QueryGuildBankTab(currentTab)
 	end
-	
+
 	-- Send update for the current tab's virtual bag
 	local virtualBagId = 100 + currentTab
 	addon:SendMessage('AdiBags_BagUpdated', virtualBagId)
