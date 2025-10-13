@@ -31,10 +31,18 @@ El filtro funciona en múltiples idiomas:
 
 ## Cómo Funciona
 
-1. El filtro escanea el tooltip de cada objeto de tipo "Trade Goods"
-2. Busca palabras clave relacionadas con profesiones
+1. El filtro usa una base de datos de Item IDs por profesión
+2. Cada objeto de tipo "Trade Goods" se verifica contra la base de datos
 3. Agrupa automáticamente los objetos en secciones por profesión
 4. Los objetos sin profesión detectada se agrupan en "Other Trade Goods"
+
+### Base de Datos de Items
+
+El filtro contiene listas completas de Item IDs para WoW 3.3.5, incluyendo:
+- Todos los materiales básicos (barras, minerales, telas, cueros, hierbas)
+- Materiales procesados (hilos, tintes, tintas, pigmentos)
+- Elementos especiales (explosivos, piezas de ingeniería, fragmentos de encantamiento)
+- Materiales de cocina y primeros auxilios
 
 ## Configuración
 
@@ -46,16 +54,8 @@ El filtro funciona en múltiples idiomas:
 
 ### Opciones Disponibles
 
-#### Enable (Activar)
-- **Descripción**: Activa o desactiva el filtro de profesiones
-- **Por defecto**: Activado
-
-#### Scan Tooltips (Escanear Tooltips)
-- **Descripción**: Permite escanear los tooltips de los objetos para detectar la profesión
-- **Nota**: Desactiva esto si experimentas problemas de rendimiento
-- **Por defecto**: Activado
-
 #### Group Other Trade Goods (Agrupar Otros Objetos Comerciales)
+
 - **Descripción**: Agrupa los Trade Goods sin profesión detectada en una sección "Other Trade Goods"
 - **Por defecto**: Activado
 
@@ -75,53 +75,58 @@ Esto permite que los materiales de profesión se organicen correctamente sin int
 
 ## Rendimiento
 
-El filtro usa un sistema de caché para minimizar el impacto en el rendimiento:
-- Los resultados se almacenan en caché por item ID
-- El caché se limpia cuando el filtro se activa/desactiva
-- Si experimentas lag, puedes desactivar "Scan Tooltips" en las opciones
+El filtro es extremadamente eficiente ya que usa una base de datos estática de Item IDs:
+
+- No requiere escaneo de tooltips
+- Búsqueda instantánea por Item ID
+- Sin impacto en el rendimiento del juego
 
 ## Notas Técnicas
 
 ### Archivo Principal
+
 `modules/ProfessionTradeGoods.lua`
 
 ### Dependencias
+
 - AceEvent-3.0 (para manejo de eventos)
-- Sistema de tooltips de WoW
+- Base de datos de Item IDs de WoW 3.3.5
 
 ### Cómo se Detectan las Profesiones
 
-El filtro busca palabras clave en los tooltips de los objetos. Por ejemplo:
-- En español: "Herrería", "Sastrería", "Peletería"
-- En inglés: "Blacksmithing", "Tailoring", "Leatherworking"
+El filtro usa una base de datos interna con cientos de Item IDs organizados por profesión. Cada objeto se verifica contra esta base de datos para determinar a qué profesión pertenece.
 
 ## Solución de Problemas
 
 ### Los objetos no se agrupan correctamente
-- Verifica que "Scan Tooltips" esté activado
-- Asegúrate de que el filtro esté habilitado
+
+- Asegúrate de que el filtro esté habilitado en la configuración
+- Verifica que el objeto sea realmente de tipo "Trade Goods"
 - Comprueba que el filtro "Item Category" no esté interfiriendo (debería tener menor prioridad)
 
-### Problemas de rendimiento
-- Desactiva "Scan Tooltips" si experimentas lag
-- El caché debería resolver la mayoría de los problemas de rendimiento
-
 ### Los objetos aparecen en "Other Trade Goods"
-- Algunos objetos pueden no tener información de profesión en su tooltip
-- Esto es normal para objetos genéricos que pueden usarse en múltiples profesiones
+
+- Algunos objetos pueden no estar en la base de datos todavía
+- Objetos genéricos que se usan en múltiples profesiones pueden no tener profesión asignada
+- Si encuentras un objeto que debería estar clasificado, puedes añadirlo al código
 
 ## Desarrollo
 
-### Añadir Soporte para Nuevos Idiomas
+### Añadir Nuevos Item IDs
 
-Para añadir soporte para un nuevo idioma, edita el array `PROFESSION_PATTERNS` en el archivo:
+Para añadir nuevos items a una profesión, edita el array `PROFESSION_ITEMS` en el archivo:
+
 ```lua
-["Palabra en nuevo idioma"] = "NOMBRE_PROFESION_EN_MAYUSCULAS"
+BLACKSMITHING = {
+    -- Añade el nuevo Item ID aquí
+    12345, -- Descripción del item
+}
 ```
 
 ### Modificar Prioridad
 
 Para cambiar la prioridad del filtro, modifica el segundo parámetro en:
+
 ```lua
 local filter = addon:RegisterFilter("ProfessionTradeGoods", 85, "AceEvent-3.0")
 ```
