@@ -29,8 +29,6 @@ mod.uiDesc = "Prevents errors in DataStore_Containers when using Personal Bank s
 
 local dataStoreHooked = false
 
-end
-
 --------------------------------------------------------------------------------
 -- Helper function to detect Personal Bank
 --------------------------------------------------------------------------------
@@ -224,7 +222,7 @@ function mod:HookDataStore()
 		local testResult = GetGuildInfo("player")
 		print("|cffFFFF00[AdiBags DataStoreCompat]|r Test GetGuildInfo result:", testResult or "nil")
 	end)
-	
+
 	self:RegisterEvent('GUILDBANKBAGSLOTS_CHANGED', function()
 		print("|cffFF8800[AdiBags DataStoreCompat]|r >>> GUILDBANKBAGSLOTS_CHANGED event fired!")
 	end)
