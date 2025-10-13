@@ -4,6 +4,8 @@
 
 Este nuevo filtro permite separar automáticamente los objetos de la categoría "Trade Goods" (Mercancías comerciales) en secciones específicas según la profesión a la que pertenecen.
 
+Compatible con servidores que no tienen Joyería ni Inscripción (pre-WotLK o custom).
+
 ## Características
 
 ### Profesiones Soportadas
@@ -16,10 +18,10 @@ El filtro detecta y organiza materiales de las siguientes profesiones:
 - **Alquimia** (Alchemy)
 - **Ingeniería** (Engineering)
 - **Encantamiento** (Enchanting)
-- **Joyería** (Jewelcrafting)
-- **Inscripción** (Inscription)
 - **Cocina** (Cooking)
 - **Primeros auxilios** (First Aid)
+
+**Nota:** Joyería e Inscripción no están incluidas ya que no están disponibles en este servidor.
 
 ### Soporte Multi-idioma
 
