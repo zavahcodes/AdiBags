@@ -6,6 +6,17 @@
 ## 🚀 Latest Improvements (October 2025)
 <details open> <summary> Click to see recent enhancements: </summary>
 
+### New Trade Goods by Profession Filter 🆕
+- **Automatic profession organization**: New filter that separates trade goods into dedicated sections by profession
+- **8 professions supported**: Blacksmithing, Tailoring, Leatherworking, Alchemy, Engineering, Enchanting, Cooking, First Aid
+- **500+ Item IDs database**: Comprehensive database covering all major trade goods in WoW 3.3.5
+- **Lightning-fast performance**: Uses static Item ID lookups for instant classification with zero performance impact
+- **Configurable options**: Choose whether to group unclassified trade goods in a separate section
+- **Smart classification**: Materials automatically sorted by profession type (bars, ores, cloth, leather, herbs, etc.)
+- **No Jewelcrafting/Inscription**: Optimized for servers without these professions
+- **Complete documentation**: Includes user guide and developer guide for adding custom items
+- **Easy to extend**: Simple to add new items to any profession category
+
 ### New Manual Refresh Button
 - **Quick refresh control**: Added new "R" button to the top-left corner of bags (before the "T" button)
 - **Force layout update**: Manually trigger a complete refresh of bag layout and item reorganization
@@ -55,6 +66,10 @@
 - **Modular design**: New features implemented as separate modules for easy maintenance
 
 These improvements make bag management more intuitive, prevent accidental disposal of useful items, and provide much better readability for high-stack items!
+
+**📚 Full Documentation:**
+- [Trade Goods by Profession - User Guide](PROFESSION_FILTER_README.md)
+- [Adding Items to Profession Filter - Developer Guide](ADDING_ITEMS_GUIDE.md)
 </details>
 
 ## 📦 Download & Installation
