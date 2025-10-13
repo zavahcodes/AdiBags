@@ -121,6 +121,12 @@ local function CreateFakeGuild(DataStore)
 
 	local fakeGuild = DataStore.db.global.Guilds[guildKey]
 
+	-- Ensure Tabs table exists (it might be corrupted if guild already existed)
+	if not fakeGuild.Tabs then
+		fakeGuild.Tabs = {}
+		print("|cffFFFF00[AdiBags DataStoreCompat]|r Tabs table was nil, creating new one")
+	end
+
 	-- Create 8 empty tabs
 	for i = 1, 8 do
 		if not fakeGuild.Tabs[i] then
@@ -138,7 +144,14 @@ local function CreateFakeGuild(DataStore)
 		end
 	end
 
-	print("|cff00ff00[AdiBags DataStoreCompat]|r Fake guild has", #fakeGuild.Tabs, "tabs initialized")
+	-- Safe count of tabs
+	local tabCount = 0
+	for i = 1, 8 do
+		if fakeGuild.Tabs[i] then
+			tabCount = tabCount + 1
+		end
+	end
+	print("|cff00ff00[AdiBags DataStoreCompat]|r Fake guild has", tabCount, "tabs initialized")
 
 	return fakeGuild, guildKey
 end
