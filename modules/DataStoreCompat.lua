@@ -19,7 +19,7 @@ local GetGuildInfo = _G.GetGuildInfo
 --GLOBALS>
 
 -- Create the module
-local mod = addon:NewModule('DataStoreCompat', 'AceEvent-3.0', 'AceHook-3.0')
+local mod = addon:NewModule('DataStoreCompat', 'AceEvent-3.0', 'AceHook-3.0', 'AceTimer-3.0')
 mod.uiName = "DataStore Compatibility"
 mod.uiDesc = "Prevents errors in DataStore_Containers when using Personal Bank systems."
 
@@ -43,7 +43,8 @@ end
 function mod:OnEnable()
 	-- Check if DataStore_Containers is loaded
 	if IsAddOnLoaded("DataStore_Containers") then
-		self:ScheduleTimer(function() self:HookDataStore() end, 0.5)
+		-- Call directly without timer
+		self:HookDataStore()
 	else
 		-- Wait for it to load
 		self:RegisterEvent('ADDON_LOADED')
@@ -62,8 +63,8 @@ end
 
 function mod:ADDON_LOADED(event, loadedAddon)
 	if loadedAddon == "DataStore_Containers" and not dataStoreHooked then
-		-- Wait a bit for DataStore_Containers to fully initialize
-		self:ScheduleTimer(function() self:HookDataStore() end, 0.5)
+		-- Call directly without timer
+		self:HookDataStore()
 		self:UnregisterEvent('ADDON_LOADED')
 	end
 end
@@ -88,58 +89,37 @@ function mod:HookDataStore()
 		return
 	end
 
-	-- Strategy: Unregister DataStore_Containers' events when Personal Bank is detected
-	-- DataStore_Containers line 356 error: local t = thisGuild.Tabs[tabID]
-	-- thisGuild is nil when GetGuildInfo("player") returns nil (Personal Bank)
+	-- Strategy: Intercept the events BEFORE they reach DataStore_Containers
+	-- Register our own handlers with higher priority (register first)
 
-	local originalOnGuildBankFrameOpened = DSContainers.GUILDBANKFRAME_OPENED
-	local originalOnGuildBankBagSlotsChanged = DSContainers.GUILDBANKBAGSLOTS_CHANGED
-	local originalOnGuildBankUpdateTabs = DSContainers.GUILDBANK_UPDATE_TABS
-	local originalOnGuildBankFrameClosed = DSContainers.GUILDBANKFRAME_CLOSED
-
-	-- Flag to track if we've disabled DataStore
-	local dataStoreDisabled = false
-
-	-- Hook GUILDBANKFRAME_OPENED to detect Personal Bank and disable DataStore
-	if originalOnGuildBankFrameOpened then
-		self:RawHook(DSContainers, 'GUILDBANKFRAME_OPENED', function(self, event, ...)
-			if IsPersonalBank() then
-				addon:Debug('Personal Bank detected - disabling DataStore_Containers guild bank events')
-				-- Unregister the problematic events that call ScanGuildBankInfo()
-				self:UnregisterEvent("GUILDBANKBAGSLOTS_CHANGED")
-				self:UnregisterEvent("GUILDBANK_UPDATE_TABS")
-				dataStoreDisabled = true
-				return
+	-- Hook GUILDBANKFRAME_OPENED to detect Personal Bank
+	self:RegisterEvent('GUILDBANKFRAME_OPENED', function()
+		if IsPersonalBank() then
+			addon:Debug('Personal Bank detected - blocking DataStore_Containers events')
+			-- Temporarily unregister DataStore's problematic events
+			if DSContainers.GUILDBANKBAGSLOTS_CHANGED then
+				DSContainers:UnregisterEvent("GUILDBANKBAGSLOTS_CHANGED")
+				addon:Debug('Unregistered DataStore GUILDBANKBAGSLOTS_CHANGED')
 			end
-
-			-- Normal guild bank - let DataStore handle it
-			return mod.hooks[DSContainers]['GUILDBANKFRAME_OPENED'](self, event, ...)
-		end, true)
-		addon:Debug('Hooked DataStore_Containers.GUILDBANKFRAME_OPENED')
-	end
+			if DSContainers.GUILDBANK_UPDATE_TABS then
+				DSContainers:UnregisterEvent("GUILDBANK_UPDATE_TABS")
+				addon:Debug('Unregistered DataStore GUILDBANK_UPDATE_TABS')
+			end
+		end
+	end)
 
 	-- Hook GUILDBANKFRAME_CLOSED to re-enable DataStore
-	if originalOnGuildBankFrameClosed then
-		self:RawHook(DSContainers, 'GUILDBANKFRAME_CLOSED', function(self, event, ...)
-			if dataStoreDisabled then
-				addon:Debug('Re-enabling DataStore_Containers guild bank events')
-				-- Re-register the events with their original handlers
-				if originalOnGuildBankBagSlotsChanged then
-					self:RegisterEvent("GUILDBANKBAGSLOTS_CHANGED", originalOnGuildBankBagSlotsChanged)
-				end
-				if originalOnGuildBankUpdateTabs then
-					self:RegisterEvent("GUILDBANK_UPDATE_TABS", originalOnGuildBankUpdateTabs)
-				end
-				dataStoreDisabled = false
-			end
-
-			-- Call original handler if it exists
-			if mod.hooks[DSContainers]['GUILDBANKFRAME_CLOSED'] then
-				return mod.hooks[DSContainers]['GUILDBANKFRAME_CLOSED'](self, event, ...)
-			end
-		end, true)
-		addon:Debug('Hooked DataStore_Containers.GUILDBANKFRAME_CLOSED')
-	end
+	self:RegisterEvent('GUILDBANKFRAME_CLOSED', function()
+		-- Re-register DataStore events
+		if DSContainers.GUILDBANKBAGSLOTS_CHANGED then
+			DSContainers:RegisterEvent("GUILDBANKBAGSLOTS_CHANGED")
+			addon:Debug('Re-registered DataStore GUILDBANKBAGSLOTS_CHANGED')
+		end
+		if DSContainers.GUILDBANK_UPDATE_TABS then
+			DSContainers:RegisterEvent("GUILDBANK_UPDATE_TABS")
+			addon:Debug('Re-registered DataStore GUILDBANK_UPDATE_TABS')
+		end
+	end)
 
 	dataStoreHooked = true
 	addon:Debug('DataStore_Containers compatibility hooks installed successfully')
