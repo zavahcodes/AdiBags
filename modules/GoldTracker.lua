@@ -17,7 +17,7 @@ local pairs = _G.pairs
 local time = _G.time
 --GLOBALS>
 
-local mod = addon:NewModule('GoldTracker', 'AceEvent-3.0')
+local mod = addon:NewModule('GoldTracker', 'AceEvent-3.0', 'AceTimer-3.0')
 mod.uiName = L['Gold Tracker']
 mod.uiDesc = L['Track gold amounts for all characters on this realm.']
 
@@ -36,20 +36,27 @@ function mod:OnInitialize()
 	if not db[realm] then
 		db[realm] = {}
 	end
-	
+
 	-- Force enable this module always (it needs to track gold even when not visible)
 	self:SetEnabledState(true)
 end
 
 function mod:OnEnable()
 	self:RegisterEvent('PLAYER_MONEY', 'UpdateGold')
-	self:RegisterEvent('PLAYER_ENTERING_WORLD', 'UpdateGold')
+	self:RegisterEvent('PLAYER_ENTERING_WORLD', 'OnPlayerEnteringWorld')
 
-	-- Update gold immediately on enable
-	self:UpdateGold()
-	
 	-- Print confirmation message
 	print("|cff00ff00AdiBags GoldTracker:|r Module enabled and tracking gold")
+end
+
+function mod:OnPlayerEnteringWorld()
+	-- Delay the gold update to ensure the money is loaded
+	-- Use C_Timer if available, otherwise use AceTimer
+	if _G.C_Timer then
+		_G.C_Timer.After(1, function() self:UpdateGold() end)
+	else
+		self:ScheduleTimer('UpdateGold', 1)
+	end
 end
 
 function mod:OnDisable()
@@ -61,7 +68,7 @@ function mod:UpdateGold()
 	local playerName = UnitName("player")
 	local realm = GetRealmName()
 	local currentGold = GetMoney()
-	
+
 	-- Ensure db is initialized
 	if not _G.AdiBagsGoldTrackerDB then
 		_G.AdiBagsGoldTrackerDB = {}
@@ -70,6 +77,13 @@ function mod:UpdateGold()
 
 	if not db[realm] then
 		db[realm] = {}
+	end
+
+	-- Don't overwrite existing gold data with 0 unless we're sure it's legitimate
+	-- This prevents the issue where PLAYER_ENTERING_WORLD fires before gold is loaded
+	if currentGold == 0 and db[realm][playerName] and db[realm][playerName].gold > 0 then
+		print(string.format("|cffff8800AdiBags GoldTracker:|r Skipping update for %s - gold not loaded yet (got 0, have %d)", playerName, db[realm][playerName].gold))
+		return
 	end
 
 	-- Update character's gold
@@ -77,7 +91,7 @@ function mod:UpdateGold()
 		gold = currentGold,
 		lastUpdate = time()
 	}
-	
+
 	-- Debug message
 	print(string.format("|cff00ff00AdiBags GoldTracker:|r Updated %s on %s with %d copper", playerName, realm, currentGold))
 end
@@ -85,24 +99,24 @@ end
 -- Get all characters gold data for current realm
 function mod:GetRealmGoldData()
 	local realm = GetRealmName()
-	
+
 	-- Ensure db is initialized
 	if not _G.AdiBagsGoldTrackerDB then
 		_G.AdiBagsGoldTrackerDB = {}
 	end
 	db = _G.AdiBagsGoldTrackerDB
-	
+
 	if not db[realm] then
 		db[realm] = {}
 	end
-	
+
 	-- Count characters for debug
 	local count = 0
 	for _ in pairs(db[realm]) do
 		count = count + 1
 	end
 	self:Debug('GetRealmGoldData for', realm, '- Found', count, 'characters')
-	
+
 	return db[realm]
 end
 
@@ -169,7 +183,7 @@ _G.SlashCmdList["ADIBAGSGOLD"] = function(msg)
 	print("|cff00ff00AdiBags GoldTracker Debug:|r")
 	print("Realm: " .. realm)
 	print("Database exists: " .. tostring(_G.AdiBagsGoldTrackerDB ~= nil))
-	
+
 	if _G.AdiBagsGoldTrackerDB and _G.AdiBagsGoldTrackerDB[realm] then
 		print("Characters on this realm:")
 		for charName, data in pairs(_G.AdiBagsGoldTrackerDB[realm]) do
