@@ -118,23 +118,8 @@ function mod:GUILDBANKFRAME_OPENED(event)
 	local virtualBagId = 100 + currentTab
 	addon:SendMessage('AdiBags_BagUpdated', virtualBagId)
 
-	-- Aggressive continuous hiding
-	local function ForceHideFrame()
-		if GuildBankFrame and GuildBankFrame:IsShown() then
-			print("GUILD BANK DEBUG: Frame still visible, forcing hide again")
-			GuildBankFrame:Hide()
-			GuildBankFrame:SetAlpha(0)
-			GuildBankFrame:EnableMouse(false)
-		end
-	end
-
-	-- Schedule multiple forced hides
-	self:ScheduleTimer(ForceHideFrame, 0.1)
-	self:ScheduleTimer(ForceHideFrame, 0.3)
-	self:ScheduleTimer(ForceHideFrame, 0.5)
-	self:ScheduleTimer(ForceHideFrame, 1.0)
-
-	print("GUILD BANK DEBUG: GUILDBANKFRAME_OPENED processing complete")
+	-- The basic hiding already worked, so we don't need aggressive timers
+	print("GUILD BANK DEBUG: Frame hidden successfully, no additional timers needed")	print("GUILD BANK DEBUG: GUILDBANKFRAME_OPENED processing complete")
 end
 
 function mod:GUILDBANKFRAME_CLOSED(event)
@@ -282,7 +267,7 @@ end
 --------------------------------------------------------------------------------
 
 local function NOOP()
-	print("GUILD BANK DEBUG: NOOP function called")
+	-- Silent NOOP function
 end
 
 function mod:SetupFrameHiding()
@@ -308,23 +293,17 @@ function mod:SetupFrameHiding()
 			end, true)
 
 			self:RawHook(GuildBankFrame, "Show", function()
-				print("GUILD BANK DEBUG: Show() hook called - BLOCKING")
+				print("GUILD BANK DEBUG: Show() blocked")
 				-- Do nothing to block showing
 			end, true)
 
-			self:RawHook(GuildBankFrame, "Hide", function()
-				print("GUILD BANK DEBUG: Hide() hook called")
-				-- Allow hiding
-			end, true)
+			self:RawHook(GuildBankFrame, "Hide", NOOP, true)
 
 			if GuildBankFrame.IsShown then
 				self:RawHook(GuildBankFrame, "IsShown", function()
-					print("GUILD BANK DEBUG: IsShown() hook called - returning false")
 					return false
 				end, true)
-			end
-
-			print("GUILD BANK DEBUG: All hooks installed successfully")
+			end			print("GUILD BANK DEBUG: All hooks installed successfully")
 			addon:Debug('GuildBankFrame hooks installed successfully')
 			return true
 		else
