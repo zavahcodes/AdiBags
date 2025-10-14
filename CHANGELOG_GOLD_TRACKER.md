@@ -97,6 +97,6 @@ AdiBagsGoldTrackerDB = {
 
 ---
 
-**Tested on**: Ascension WoW - Bronzebeard - Warcraft Reborn  
-**WoW Version**: 3.3.5 (WoTLK)  
+**Tested on**: Ascension WoW - Bronzebeard - Warcraft Reborn
+**WoW Version**: 3.3.5 (WoTLK)
 **Status**: ✅ Production Ready
