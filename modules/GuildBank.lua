@@ -116,10 +116,22 @@ function mod:GUILDBANKFRAME_OPENED(event)
 
 	-- Send update for the current tab's virtual bag
 	local virtualBagId = 100 + currentTab
-	addon:SendMessage('AdiBags_BagUpdated', virtualBagId)
+	print("GUILD BANK DEBUG: About to send AdiBags_BagUpdated for bag", virtualBagId)
+
+	-- Try to send the message with error handling
+	local success, err = pcall(function()
+		addon:SendMessage('AdiBags_BagUpdated', virtualBagId)
+	end)
+
+	if not success then
+		print("GUILD BANK DEBUG: ERROR sending AdiBags_BagUpdated:", err)
+	else
+		print("GUILD BANK DEBUG: Successfully sent AdiBags_BagUpdated")
+	end
 
 	-- The basic hiding already worked, so we don't need aggressive timers
-	print("GUILD BANK DEBUG: Frame hidden successfully, no additional timers needed")	print("GUILD BANK DEBUG: GUILDBANKFRAME_OPENED processing complete")
+	print("GUILD BANK DEBUG: Frame hidden successfully, no additional timers needed")
+	print("GUILD BANK DEBUG: GUILDBANKFRAME_OPENED processing complete")
 end
 
 function mod:GUILDBANKFRAME_CLOSED(event)
@@ -148,7 +160,14 @@ function mod:GUILDBANKBAGSLOTS_CHANGED(event, tab, slot)
 	-- Send update for the virtual bag ID corresponding to this tab
 	-- Virtual bag ID = 100 + tab number
 	local virtualBagId = 100 + tab
-	addon:SendMessage('AdiBags_BagUpdated', virtualBagId)
+
+	local success, err = pcall(function()
+		addon:SendMessage('AdiBags_BagUpdated', virtualBagId)
+	end)
+
+	if not success then
+		print("GUILD BANK DEBUG: ERROR in GUILDBANKBAGSLOTS_CHANGED:", err)
+	end
 end
 
 function mod:GUILDBANK_UPDATE_TABS(event)
@@ -173,7 +192,14 @@ function mod:GUILDBANK_UPDATE_TABS(event)
 
 	-- Send update for the current tab's virtual bag
 	local virtualBagId = 100 + currentTab
-	addon:SendMessage('AdiBags_BagUpdated', virtualBagId)
+	
+	local success, err = pcall(function()
+		addon:SendMessage('AdiBags_BagUpdated', virtualBagId)
+	end)
+	
+	if not success then
+		print("GUILD BANK DEBUG: ERROR in GUILDBANK_UPDATE_TABS:", err)
+	end
 end
 
 --------------------------------------------------------------------------------
