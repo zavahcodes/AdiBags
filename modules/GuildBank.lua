@@ -25,7 +25,7 @@ local type = _G.type
 --GLOBALS>
 
 -- Create the module (using different name to avoid conflict with GuildBank bag)
-local mod = addon:NewModule('GuildBankSupport', 'AceEvent-3.0', 'AceHook-3.0')
+local mod = addon:NewModule('GuildBankSupport', 'AceEvent-3.0', 'AceHook-3.0', 'AceTimer-3.0')
 mod.uiName = L['Guild Bank Support'] or "Guild Bank Support"
 mod.uiDesc = L['Display guild bank contents in AdiBags (read-only mode).'] or "Display guild bank contents in AdiBags (read-only mode)."
 
@@ -283,8 +283,8 @@ function mod:GUILDBANKFRAME_OPENED(event)
 	HideGuildBankFrameCompletely()
 
 	-- Schedule additional hides with delay in case frame shows later
-	addon:ScheduleTimer(HideGuildBankFrameCompletely, 0.1)
-	addon:ScheduleTimer(HideGuildBankFrameCompletely, 0.3)
+	self:ScheduleTimer(HideGuildBankFrameCompletely, 0.1)
+	self:ScheduleTimer(HideGuildBankFrameCompletely, 0.3)
 
 	-- Call the original handler
 	return originalGUILDBANKFRAME_OPENED(self, event)
