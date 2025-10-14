@@ -126,8 +126,14 @@ function mod:AdiBags_BagClosed(event, bagName, bag)
 	-- Check if it's the GuildBank bag that was closed
 	if bagName == "GuildBank" and guildBankOpen then
 		print("|cFFFFFF00[AdiBags Guild Bank]|r Usuario cerró AdiBags, cerrando frame original...")
-		
-		-- Now it's safe to call Hide() to properly close the GuildBankFrame
+
+		-- Properly close the Guild Bank (tells the server we're done)
+		if CloseGuildBankFrame then
+			CloseGuildBankFrame()
+			print("|cFFFF0000[AdiBags Guild Bank]|r Llamado CloseGuildBankFrame() - servidor notificado")
+		end
+
+		-- Also hide the frame visually
 		if GuildBankFrame then
 			GuildBankFrame:Hide()
 			print("|cFFFF0000[AdiBags Guild Bank]|r Frame original CERRADO definitivamente")
