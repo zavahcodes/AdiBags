@@ -14,6 +14,7 @@
 - **DataStore compatibility**: Built-in compatibility module for DataStore_Containers addon
 - **No guild required**: Works perfectly on servers with Personal Bank systems
 - **Item interactions**: Full support for tooltips, item clicks, and drag-and-drop operations
+- **Right-click category to move items**: Right-click on any section header to automatically move all items from that category to your inventory
 - **Clean UI**: Custom title shows "Personal Bank" for better clarity
 - **Zero configuration**: Works automatically when you open Personal Bank
 
