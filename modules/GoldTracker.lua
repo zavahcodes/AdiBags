@@ -135,8 +135,8 @@ end
 
 -- Format gold into gold, silver, copper display
 function mod:FormatMoney(amount)
-	if not amount or amount == 0 then
-		return "0|TInterface\\MoneyFrame\\UI-CopperIcon:0:0:2:0|t"
+	if not amount then
+		amount = 0
 	end
 
 	local gold = math.floor(amount / 10000)
@@ -145,19 +145,17 @@ function mod:FormatMoney(amount)
 
 	local str = ""
 
+	-- Gold: Show only if > 0, no padding
 	if gold > 0 then
 		str = str .. gold .. "|TInterface\\MoneyFrame\\UI-GoldIcon:0:0:2:0|t"
 	end
 
-	if silver > 0 or gold > 0 then
-		if str ~= "" then str = str .. " " end
-		str = str .. silver .. "|TInterface\\MoneyFrame\\UI-SilverIcon:0:0:2:0|t"
-	end
+	-- Silver: Always show with 2-digit padding (00-99)
+	if str ~= "" then str = str .. " " end
+	str = str .. string.format("%02d", silver) .. "|TInterface\\MoneyFrame\\UI-SilverIcon:0:0:2:0|t"
 
-	if copper > 0 or str == "" then
-		if str ~= "" then str = str .. " " end
-		str = str .. copper .. "|TInterface\\MoneyFrame\\UI-CopperIcon:0:0:2:0|t"
-	end
+	-- Copper: Always show with 2-digit padding (00-99)
+	str = str .. " " .. string.format("%02d", copper) .. "|TInterface\\MoneyFrame\\UI-CopperIcon:0:0:2:0|t"
 
 	return str
 end

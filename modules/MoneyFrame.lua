@@ -127,7 +127,7 @@ function mod:ShowGoldTooltip(frame)
 		GameTooltip:AddLine(" ")
 		local totalGold = goldTracker:GetTotalRealmGold()
 		local formattedTotal = goldTracker:FormatMoney(totalGold)
-		GameTooltip:AddDoubleLine(L["Total"], formattedTotal, 1, 0.82, 0, 1, 0.82, 0)
+		GameTooltip:AddDoubleLine(L["Total"], formattedTotal, 1, 1, 1, 1, 1, 1)
 	end
 
 	GameTooltip:Show()
