@@ -60,14 +60,14 @@ end
 
 function mod:OnDisable()
 	self:UnregisterAllEvents()
-	
+
 	-- Restore original GuildBankFrame functionality if it was hooked
 	if GuildBankFrame and self.hooks and self.hooks[GuildBankFrame] then
 		if self.hooks[GuildBankFrame].Show then
 			self.hooks[GuildBankFrame].Show(GuildBankFrame)
 		end
 	end
-	
+
 	guildBankOpen = false
 	addon:Debug('GuildBank module disabled')
 end
@@ -244,22 +244,24 @@ function mod:SetupFrameHiding()
 	-- Use the same pattern as AdiBags uses for BankFrame
 	if GuildBankFrame then
 		GuildBankFrame:Hide()
-		
+
 		-- Hook the Show method to prevent the frame from showing
-		self:RawHook(GuildBankFrame, "Show", function() 
+		self:RawHook(GuildBankFrame, "Show", function()
 			-- Do nothing - prevents the frame from showing
 			addon:Debug('Blocked GuildBankFrame:Show()')
 		end, true)
-		
+
 		-- Hook OnEvent to prevent event processing
 		if GuildBankFrame.OnEvent then
-			self:RawHookScript(GuildBankFrame, "OnEvent", function() 
+			self:RawHookScript(GuildBankFrame, "OnEvent", function()
 				-- Do nothing - prevents event processing
 			end, true)
 		end
-		
+
 		addon:Debug('GuildBankFrame hooks installed')
 	else
 		addon:Debug('GuildBankFrame not found during setup')
 	end
-endaddon:Debug('GuildBank module loaded')
+end
+
+addon:Debug('GuildBank module loaded')
