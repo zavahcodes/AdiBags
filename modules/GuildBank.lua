@@ -80,7 +80,6 @@ end
 --------------------------------------------------------------------------------
 
 function mod:GUILDBANKFRAME_OPENED(event)
-	print("|cFF00FF00[AdiBags Guild Bank]|r Frame original del Guild Bank se ha ABIERTO")
 	addon:Debug('Guild Bank opened')
 
 	-- CRITICAL: Make the frame invisible WITHOUT calling Hide()
@@ -93,7 +92,6 @@ function mod:GUILDBANKFRAME_OPENED(event)
 		GuildBankFrame:ClearAllPoints()
 		GuildBankFrame:SetPoint("TOPLEFT", UIParent, "TOPLEFT", -10000, -10000)
 		GuildBankFrame:SetScale(0.01)
-		print("|cFF00FF00[AdiBags Guild Bank]|r Frame original OCULTO (invisible pero activo)")
 	end
 	guildBankOpen = true
 
@@ -114,7 +112,6 @@ function mod:GUILDBANKFRAME_OPENED(event)
 end
 
 function mod:GUILDBANKFRAME_CLOSED(event)
-	print("|cFFFF0000[AdiBags Guild Bank]|r Frame original del Guild Bank se ha CERRADO")
 	addon:Debug('Guild Bank closed')
 	guildBankOpen = false
 
@@ -125,18 +122,14 @@ end
 function mod:AdiBags_BagClosed(event, bagName, bag)
 	-- Check if it's the GuildBank bag that was closed
 	if bagName == "GuildBank" and guildBankOpen then
-		print("|cFFFFFF00[AdiBags Guild Bank]|r Usuario cerró AdiBags, cerrando frame original...")
-
 		-- Properly close the Guild Bank (tells the server we're done)
 		if CloseGuildBankFrame then
 			CloseGuildBankFrame()
-			print("|cFFFF0000[AdiBags Guild Bank]|r Llamado CloseGuildBankFrame() - servidor notificado")
 		end
 
 		-- Also hide the frame visually
 		if GuildBankFrame then
 			GuildBankFrame:Hide()
-			print("|cFFFF0000[AdiBags Guild Bank]|r Frame original CERRADO definitivamente")
 		end
 
 		guildBankOpen = false
