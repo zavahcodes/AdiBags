@@ -66,6 +66,8 @@ modules\BankSwitcher.lua
 modules\ProfessionTradeGoods.lua
 modules\GuildBank.lua
 modules\DataStoreCompat.lua
+modules\ItemCount.lua
+modules\ItemCountTooltip.lua
 
 DefaultFilters.lua
 
