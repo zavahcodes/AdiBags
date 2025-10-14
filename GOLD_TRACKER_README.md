@@ -65,15 +65,21 @@ AdiBagsGoldTrackerDB = {
 
 - **Persistencia por reino**: Los datos se guardan por reino, no se mezclan entre diferentes reinos
 - **Actualización automática**: El oro se actualiza automáticamente cuando cambia
+- **Protección contra sobrescritura**: No sobrescribe datos válidos con 0 durante la carga del personaje
+- **Retraso inteligente**: Espera 1 segundo después de entrar al mundo para asegurar que el oro esté cargado
 - **Formato visual**: Usa los iconos de WoW para oro, plata y cobre
 - **Ordenamiento**: Los personajes se muestran ordenados alfabéticamente
+- **Comando de debug**: Usa `/adibagsgold` para ver todos los datos guardados
 
 ---
 
 **Realm persistence**: Data is saved per realm, doesn't mix between different realms
 **Automatic updates**: Gold is automatically updated when it changes
+**Overwrite protection**: Won't overwrite valid data with 0 during character loading
+**Smart delay**: Waits 1 second after entering world to ensure gold is loaded
 **Visual format**: Uses WoW's gold, silver, and copper icons
 **Sorting**: Characters are displayed in alphabetical order
+**Debug command**: Use `/adibagsgold` to see all saved data
 
 ## Próximos Pasos / Next Steps
 
