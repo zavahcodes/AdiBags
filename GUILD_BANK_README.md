@@ -1,34 +1,29 @@
-# Personal Bank (Guild Bank) Support for AdiBags
+# Guild Bank Support for AdiBags
 
 ## Overview
 
-This feature adds Personal Bank (Guild Bank system) support to AdiBags for WoW 3.3.5 (WotLK). The implementation allows you to view Personal Bank contents through the AdiBags interface while the bank window is open. This is especially useful on servers like Ascension WoW that use the Guild Bank system as a Personal Bank for individual players.
+This feature adds Guild Bank support to AdiBags for WoW 3.3.5 (WotLK). The implementation allows you to view guild bank contents through the AdiBags interface while the guild bank window is open.
 
 ## Features
 
 ### ✅ Implemented
-- **Personal Bank Window Integration**: When you open the Personal Bank, AdiBags automatically displays it with a custom "Personal Bank" title
-- **Multi-Tab Support**: Virtual bag IDs (101-108) represent Personal Bank tabs 1-8
-- **Item Filtering**: All AdiBags filters work on Personal Bank items
-- **Visual Stacking**: Virtual stacks work with Personal Bank items
-- **Tab Switching**: Automatically updates when you switch between tabs
+- **Guild Bank Window Integration**: When you open the guild bank, AdiBags automatically displays a "GuildBank" window
+- **Multi-Tab Support**: Virtual bag IDs (101-108) represent guild bank tabs 1-8
+- **Item Filtering**: All AdiBags filters work on guild bank items
+- **Visual Stacking**: Virtual stacks work with guild bank items
+- **Tab Switching**: Automatically updates when you switch between guild bank tabs
 - **Permission Aware**: Only shows tabs you have permission to view
-- **Custom Color**: Personal Bank window has a green background color to distinguish it from regular bags
-- **Original Frame Hidden**: The default Guild Bank frame is automatically hidden while AdiBags is showing
-- **DataStore Compatibility**: Built-in module to prevent errors from DataStore_Containers addon
-- **Category-based Item Movement**: Right-click on any section header to automatically move all items from that category to your inventory
+- **Custom Color**: Guild bank window has a green background color to distinguish it
 
 ### 🔄 Current Behavior
-- Personal Bank items are displayed in **read-only mode** from AdiBags perspective
+- Guild bank items are displayed in **read-only mode** from AdiBags perspective
 - Items are filtered and organized just like regular bags
-- The current visible tab is displayed (changes when you switch tabs)
-- Personal Bank window opens automatically when you open the bank
-- Window closes automatically and properly when you close AdiBags
-- Original Guild Bank frame remains invisible but functional during use
-- Frame is properly closed when you finish using the Personal Bank
+- The current visible tab is displayed (changes when you click tabs in the default UI)
+- Guild bank window opens automatically when GUILDBANKFRAME_OPENED event fires
+- Window closes automatically when you close the guild bank
 
 ### ⚙️ Configuration
-- **Enable/Disable**: Personal Bank can be enabled/disabled in AdiBags settings under "Bags"
+- **Enable/Disable**: Guild Bank can be enabled/disabled in AdiBags settings under "Bags"
 - **Default Position**: Left side of screen (configurable)
 - **Background Color**: Green tint (0, 0.5, 0, 1) to distinguish from bank
 - **Filters**: All existing filters work on guild bank items
@@ -85,19 +80,17 @@ addon:GetGuildBankItemID(bag, slot)     -- Extracts itemID from link
 ## Known Limitations
 
 1. **Single Tab View**: Only the currently selected tab is shown (WoW API limitation)
-2. **Limited Drag-Drop**: Items can't be moved via drag-drop from AdiBags interface, but you can right-click individual items or right-click section headers to move entire categories
+2. **No Direct Interaction**: Items can't be moved via drag-drop from AdiBags (would require hooking guild bank frame)
 3. **Query Delay**: First time opening a tab may have a slight delay while data loads
+4. **Read-Only**: This is by design - prevents accidental reorganization of guild bank
 
-## Ascension Personal Bank Compatibility
+## Personal Bank Compatibility
 
-This implementation is specifically designed and tested for Personal Bank systems on private servers like Ascension WoW:
-- ✅ Full support for Personal Banks that use Guild Bank API
-- ✅ Works without being in a guild
-- ✅ Handles nil or invalid tab parameters gracefully
+This implementation has been tested with "Personal Bank" systems on private servers (like Ascension WoW):
+- ✅ Works with Personal Banks that use guild bank API
+- ✅ Handles nil or invalid tab parameters
 - ✅ Defaults to tab 1 when tab information is unavailable
-- ✅ DataStore_Containers compatibility built-in (no more errors!)
-- ✅ Original frame automatically hidden
-- ✅ Proper cleanup when closing
+- ⚠️ May show errors from other addons (like DataStore_Containers) that expect real guild data - these can be safely ignored
 
 ## Future Enhancements (Optional)
 
