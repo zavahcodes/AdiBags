@@ -6,6 +6,19 @@
 ## 🚀 Latest Improvements (October 2025)
 <details open> <summary> Click to see recent enhancements: </summary>
 
+### Item Count Across Characters 🆕
+- **Cross-character item tracking**: See how many of each item you have across all your characters on the same realm
+- **Tooltip integration**: Item counts automatically appear in tooltips when hovering over items
+- **Multiple locations tracked**: Shows separate counts for Bags, Bank, Equipped items, and Guild Bank
+- **Current character highlighted**: Easily identify which counts belong to your current character
+- **Total count display**: When you have items on multiple characters, see a grand total at the bottom
+- **Fully configurable**: Choose which locations to display (bags, bank, equipped, guild bank)
+- **Character visibility options**: Show only current character, show all characters, or customize per-character
+- **Color-coded display**: Different colors for each location type for quick visual recognition
+- **Automatic scanning**: Updates automatically when you open bags, visit bank, or change equipment
+- **Performance optimized**: Minimal performance impact with smart caching and delayed scanning
+- **Complete documentation**: See [ITEM_COUNT_README.md](ITEM_COUNT_README.md) for detailed information
+
 ### Guild Bank Support 🆕
 - **Full Guild Bank integration**: View and manage your Guild Bank contents directly within AdiBags
 - **8 virtual tabs**: All 8 Guild Bank tabs accessible through AdiBags interface (bags 101-108)
@@ -81,6 +94,7 @@
 These improvements make bag management more intuitive, prevent accidental disposal of useful items, and provide much better readability for high-stack items!
 
 **📚 Full Documentation:**
+- [Item Count Across Characters - Complete Guide](ITEM_COUNT_README.md)
 - [Guild Bank Support - Complete Guide](GUILD_BANK_README.md)
 - [Trade Goods by Profession - User Guide](PROFESSION_FILTER_README.md)
 - [Adding Items to Profession Filter - Developer Guide](ADDING_ITEMS_GUIDE.md)
