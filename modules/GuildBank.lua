@@ -240,28 +240,50 @@ end
 -- Hide original Guild Bank frame using AdiBags pattern
 --------------------------------------------------------------------------------
 
+local function NOOP() end
+
 function mod:SetupFrameHiding()
-	-- Use the same pattern as AdiBags uses for BankFrame
-	if GuildBankFrame then
-		GuildBankFrame:Hide()
+	-- Wait for GuildBankFrame to be created and then hook it
+	local function SetupHooks()
+		if GuildBankFrame then
+			addon:Debug('Found GuildBankFrame, setting up hooks')
 
-		-- Hook the Show method to prevent the frame from showing
-		self:RawHook(GuildBankFrame, "Show", function()
-			-- Do nothing - prevents the frame from showing
-			addon:Debug('Blocked GuildBankFrame:Show()')
-		end, true)
+			-- Hide the frame immediately
+			GuildBankFrame:Hide()
 
-		-- Hook OnEvent to prevent event processing
-		if GuildBankFrame.OnEvent then
-			self:RawHookScript(GuildBankFrame, "OnEvent", function()
-				-- Do nothing - prevents event processing
-			end, true)
+			-- Use the exact same pattern as AdiBags uses for BankFrame
+			self:RawHookScript(GuildBankFrame, "OnEvent", NOOP, true)
+			self:RawHook(GuildBankFrame, "Show", NOOP, true)
+			self:RawHook(GuildBankFrame, "Hide", NOOP, true)
+			if GuildBankFrame.IsShown then
+				self:RawHook(GuildBankFrame, "IsShown", function() return false end, true)
+			end
+
+			addon:Debug('GuildBankFrame hooks installed successfully')
+			return true
+		else
+			addon:Debug('GuildBankFrame not found, will retry')
+			return false
+		end
+	end
+
+	-- Try to set up hooks immediately
+	if not SetupHooks() then
+		-- If frame doesn't exist yet, wait for it to be created
+		local attempts = 0
+		local function RetrySetup()
+			attempts = attempts + 1
+			if SetupHooks() then
+				return -- Success, stop retrying
+			elseif attempts < 10 then
+				-- Retry in 0.5 seconds
+				self:ScheduleTimer(RetrySetup, 0.5)
+			else
+				addon:Debug('Failed to find GuildBankFrame after 10 attempts')
+			end
 		end
 
-		addon:Debug('GuildBankFrame hooks installed')
-	else
-		addon:Debug('GuildBankFrame not found during setup')
+		-- Start retrying
+		self:ScheduleTimer(RetrySetup, 0.1)
 	end
-end
-
-addon:Debug('GuildBank module loaded')
+endaddon:Debug('GuildBank module loaded')
