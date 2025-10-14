@@ -42,15 +42,14 @@ end
 function mod:OnClickSectionHeader(_, header, button)
     if button == "RightButton" then
         for slotId, bag, slot in header.section:IterateContainerSlots() do
-            -- Check if this is a Guild Bank bag (virtual bags 101-108)
+            -- Check if this is a Guild Bank item (bags 101-108)
             if addon:IsGuildBankBag(bag) then
-                -- For Guild Bank, use AutoStoreGuildBankItem
                 local tab = addon:GetGuildBankTab(bag)
-                if tab then
-                    AutoStoreGuildBankItem(tab, slot)
-                end
+                -- Withdraw item from guild bank to bags
+                AutoStoreGuildBankItem(tab, slot)
             else
-                -- For regular bags, use UseContainerItem
+                -- Regular bag/bank item, use normal function
+                -- This handles both: bank->bags and bags->bank/guildbank
                 UseContainerItem(bag, slot)
             end
         end
@@ -58,6 +57,7 @@ function mod:OnClickSectionHeader(_, header, button)
 end
 
 function mod:AdiBags_InteractingWindowChanged(_, new, old)
+    -- Enable for both regular bank and guild bank
     if new == "BANKFRAME" or new == "GUILDBANKFRAME" then
         addon.RegisterSectionHeaderScript(self, 'OnEnter', 'OnEnterSectionHeader')
         addon.RegisterSectionHeaderScript(self, 'OnLeave', 'OnLeaveSectionHeader')
