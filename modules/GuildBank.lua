@@ -92,6 +92,16 @@ function mod:GUILDBANKFRAME_OPENED(event)
 		GuildBankFrame:ClearAllPoints()
 		GuildBankFrame:SetPoint("TOPLEFT", UIParent, "TOPLEFT", -10000, -10000)
 		GuildBankFrame:SetScale(0.01)
+
+		-- CRITICAL: Remove from UISpecialFrames to prevent ESC key blocking
+		-- When GuildBankFrame is in UISpecialFrames, it intercepts ESC even when invisible
+		for i, frame in ipairs(UISpecialFrames) do
+			if frame == "GuildBankFrame" then
+				tremove(UISpecialFrames, i)
+				addon:Debug('Removed GuildBankFrame from UISpecialFrames to fix ESC key')
+				break
+			end
+		end
 	end
 	guildBankOpen = true
 
@@ -130,6 +140,19 @@ function mod:AdiBags_BagClosed(event, bagName, bag)
 		-- Also hide the frame visually
 		if GuildBankFrame then
 			GuildBankFrame:Hide()
+
+			-- Re-add to UISpecialFrames so it works normally next time
+			local found = false
+			for _, frame in ipairs(UISpecialFrames) do
+				if frame == "GuildBankFrame" then
+					found = true
+					break
+				end
+			end
+			if not found then
+				tinsert(UISpecialFrames, "GuildBankFrame")
+				addon:Debug('Re-added GuildBankFrame to UISpecialFrames')
+			end
 		end
 
 		guildBankOpen = false
