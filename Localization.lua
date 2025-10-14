@@ -66,6 +66,29 @@ L["Guild Bank"] = true
 L["Guild Bank Support"] = true
 L["Display guild bank contents in AdiBags (read-only mode)."] = true
 
+-- ItemCount.lua (modules)
+L["Item Count"] = true
+L["Track items across characters and display counts in tooltips."] = true
+L["Enable Item Count Tracking"] = true
+L["Track and display item counts across characters in tooltips."] = true
+L["Show Current Character"] = true
+L["Display item counts for the current character."] = true
+L["Show Other Characters"] = true
+L["Display item counts for other characters on this realm."] = true
+L["Show Locations"] = true
+L["Equipped"] = true
+L["Show equipped items."] = true
+
+-- ItemCountTooltip.lua (modules)
+L["Item Count Tooltips"] = true
+L["Display item counts from all characters in item tooltips."] = true
+L["%d Bags"] = "%d Bags"
+L["%d Bank"] = "%d Bank"
+L["%d Guild Bank"] = "%d Guild Bank"
+L["Item Count:"] = "Item Count:"
+L["(Current)"] = "(Current)"
+L["Total:"] = "Total:"
+
 -- DefaultFilters.lua
 L["Ammunition"] = true
 L["Check sets that should be merged into a unique \"Sets\" section. This is obviously a per-character setting."] = true

@@ -8,7 +8,7 @@
 ## Title: AdiBags
 ## Notes: Adirelle's bag addon.
 ## Author: Adirelle, backported to 3.3.5 by Sattva#7238 - discord
-## Version: 3.3.9
+## Version: 3.4.0
 ## SavedVariables: AdiBagsDB
 ## OptionalDeps: LibStub, CallbackHandler-1.0, Ace3, LibBabble-Inventory-3.0, AdiDebug, LibSharedMedia-3.0, Scrap, BrainDead, ProfessionsVault, Masque
 
@@ -66,6 +66,8 @@ modules\BankSwitcher.lua
 modules\ProfessionTradeGoods.lua
 modules\GuildBank.lua
 modules\DataStoreCompat.lua
+modules\ItemCount.lua
+modules\ItemCountTooltip.lua
 
 DefaultFilters.lua
 
