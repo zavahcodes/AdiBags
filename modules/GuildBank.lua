@@ -276,18 +276,20 @@ function mod:SetupFrameHiding()
 	end
 end
 
--- Override the GUILDBANKFRAME_OPENED handler to include frame hiding
+-- Store the original GUILDBANKFRAME_OPENED handler before redefining
 local originalGUILDBANKFRAME_OPENED = mod.GUILDBANKFRAME_OPENED
+
+-- Redefine GUILDBANKFRAME_OPENED to include frame hiding
 function mod:GUILDBANKFRAME_OPENED(event)
-	-- Hide the frame immediately when event fires
+	-- Call the original handler first
+	originalGUILDBANKFRAME_OPENED(self, event)
+	
+	-- Hide the frame immediately after processing the event
 	HideGuildBankFrameCompletely()
 
 	-- Schedule additional hides with delay in case frame shows later
 	self:ScheduleTimer(HideGuildBankFrameCompletely, 0.1)
 	self:ScheduleTimer(HideGuildBankFrameCompletely, 0.3)
-
-	-- Call the original handler
-	return originalGUILDBANKFRAME_OPENED(self, event)
 end
 
 addon:Debug('GuildBank module loaded')
