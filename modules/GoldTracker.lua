@@ -44,9 +44,6 @@ end
 function mod:OnEnable()
 	self:RegisterEvent('PLAYER_MONEY', 'UpdateGold')
 	self:RegisterEvent('PLAYER_ENTERING_WORLD', 'OnPlayerEnteringWorld')
-
-	-- Print confirmation message
-	print("|cff00ff00AdiBags GoldTracker:|r Module enabled and tracking gold")
 end
 
 function mod:OnPlayerEnteringWorld()
@@ -82,7 +79,6 @@ function mod:UpdateGold()
 	-- Don't overwrite existing gold data with 0 unless we're sure it's legitimate
 	-- This prevents the issue where PLAYER_ENTERING_WORLD fires before gold is loaded
 	if currentGold == 0 and db[realm][playerName] and db[realm][playerName].gold > 0 then
-		print(string.format("|cffff8800AdiBags GoldTracker:|r Skipping update for %s - gold not loaded yet (got 0, have %d)", playerName, db[realm][playerName].gold))
 		return
 	end
 
@@ -91,9 +87,6 @@ function mod:UpdateGold()
 		gold = currentGold,
 		lastUpdate = time()
 	}
-
-	-- Debug message
-	print(string.format("|cff00ff00AdiBags GoldTracker:|r Updated %s on %s with %d copper", playerName, realm, currentGold))
 end
 
 -- Get all characters gold data for current realm
@@ -109,13 +102,6 @@ function mod:GetRealmGoldData()
 	if not db[realm] then
 		db[realm] = {}
 	end
-
-	-- Count characters for debug
-	local count = 0
-	for _ in pairs(db[realm]) do
-		count = count + 1
-	end
-	self:Debug('GetRealmGoldData for', realm, '- Found', count, 'characters')
 
 	return db[realm]
 end
@@ -174,23 +160,4 @@ function mod:FormatMoney(amount)
 	end
 
 	return str
-end
-
--- Slash command for debugging
-_G.SLASH_ADIBAGSGOLD1 = "/adibagsgold"
-_G.SlashCmdList["ADIBAGSGOLD"] = function(msg)
-	local realm = GetRealmName()
-	print("|cff00ff00AdiBags GoldTracker Debug:|r")
-	print("Realm: " .. realm)
-	print("Database exists: " .. tostring(_G.AdiBagsGoldTrackerDB ~= nil))
-
-	if _G.AdiBagsGoldTrackerDB and _G.AdiBagsGoldTrackerDB[realm] then
-		print("Characters on this realm:")
-		for charName, data in pairs(_G.AdiBagsGoldTrackerDB[realm]) do
-			local goldFormatted = mod:FormatMoney(data.gold)
-			print("  " .. charName .. ": " .. goldFormatted .. " (" .. data.gold .. " copper)")
-		end
-	else
-		print("No data for this realm yet")
-	end
 end
