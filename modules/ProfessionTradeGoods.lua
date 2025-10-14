@@ -25,106 +25,168 @@ local PROFESSIONS = {
 
 local TRADE_GOODS = addon.BI['Trade Goods']
 
--- Item ID database by profession for WoW 3.3.5
+-- Item name database by profession for WoW 3.3.5
 local PROFESSION_ITEMS = {
     -- BLACKSMITHING (Herrería)
     BLACKSMITHING = {
         -- Bars (Barras)
-        2840, 2841, 2842, 3575, 3576, 3577, 3859, 3860, 6037, 11371, 12359, 12360, 12361, 12655, 17771, 23445, 23446, 23447, 23448, 36913, 36916, 37663,
+        "Copper Bar", "Bronze Bar", "Silver Bar", "Iron Bar", "Gold Bar", "Mithril Bar", "Truesilver Bar",
+        "Dark Iron Bar", "Thorium Bar", "Arcanite Bar", "Fel Iron Bar", "Adamantite Bar", "Eternium Bar",
+        "Khorium Bar", "Hardened Adamantite Bar", "Cobalt Bar", "Saronite Bar", "Titansteel Bar", "Titanium Bar",
         -- Ore (Minerales)
-        2770, 2771, 2772, 3858, 10620, 23424, 23425, 36909, 36910, 36912,
+        "Copper Ore", "Tin Ore", "Silver Ore", "Iron Ore", "Gold Ore", "Mithril Ore", "Truesilver Ore",
+        "Dark Iron Ore", "Thorium Ore", "Fel Iron Ore", "Adamantite Ore", "Eternium Ore", "Khorium Ore",
+        "Cobalt Ore", "Saronite Ore", "Titanium Ore",
         -- Stone (Piedra)
-        2835, 2836, 2838, 7912, 12363, 12364, 12365, 12799, 12800, 18240,
+        "Rough Stone", "Coarse Stone", "Heavy Stone", "Solid Stone", "Dense Stone", "Jade", "Citrine",
+        "Ruby", "Sapphire", "Diamond", "Azerothian Diamond", "Star Ruby", "Large Opal", "Blue Sapphire",
+        "Black Diamond", "Arcane Crystal", "Blood of the Mountain",
         -- Flux, etc
-        3466, 3478, 3486, 6260, 17060, 17202, 23436, 23437,
+        "Strong Flux", "Elemental Flux", "Coal", "Sulfuron Ingot", "Fiery Core", "Lava Core",
     },
 
     -- TAILORING (Sastrería)
     TAILORING = {
         -- Cloth (Tela)
-        2589, 2592, 4305, 4306, 14047, 14048, 21840, 21841, 33470, 41510, 41511,
+        "Linen Cloth", "Wool Cloth", "Silk Cloth", "Mageweave Cloth", "Runecloth", "Felcloth",
+        "Netherweave Cloth", "Imbued Netherweave", "Bolt of Imbued Netherweave", "Shadowcloth",
+        "Spellcloth", "Primal Mooncloth", "Frostweave Cloth", "Ebonweave", "Spellweave", "Moonshroud",
         -- Thread (Hilo)
-        2320, 2321, 4291, 8343, 14341, 38426,
+        "Coarse Thread", "Fine Thread", "Heavy Silken Thread", "Silken Thread", "Rune Thread", "Eternium Thread",
         -- Dye (Tinte)
-        2324, 2325, 2604, 4340, 4341, 4342, 6260, 6261, 8343, 10290,
+        "Gray Dye", "Purple Dye", "Red Dye", "Yellow Dye", "Bleach", "Pink Dye", "Black Dye",
         -- Spider Silk, etc
-        4291, 4305, 8343, 14227, 14256, 21840, 21842, 21844, 21845, 38426,
+        "Spider's Silk", "Thick Spider's Silk", "Bolt of Linen Cloth", "Bolt of Woolen Cloth",
+        "Bolt of Silk Cloth", "Bolt of Mageweave", "Bolt of Runecloth", "Mooncloth", "Shadoweave Cloth",
+        "Primal Nether", "Spellfire Cloth",
     },
 
     -- LEATHERWORKING (Peletería)
     LEATHERWORKING = {
         -- Leather (Cuero)
-        2318, 2319, 4231, 4234, 4235, 4236, 4304, 8170, 8171, 15407, 15408, 15409, 15410, 15412, 15414, 15415, 15416, 15417, 17012, 25649, 25699, 25700, 29539, 29547, 29548, 33567, 33568, 38425, 44128,
+        "Light Leather", "Medium Leather", "Heavy Leather", "Thick Leather", "Rugged Leather",
+        "Knothide Leather", "Heavy Knothide Leather", "Fel Scales", "Crystal Infused Leather",
+        "Cobra Scales", "Wind Scales", "Borean Leather", "Heavy Borean Leather", "Icy Dragonscale",
+        "Nerubian Chitin", "Jormungar Scale", "Arctic Fur",
         -- Scales (Escamas)
-        5498, 5500, 7286, 7392, 8154, 8165, 8167, 8168, 15408, 15410, 15412, 15414, 15415, 15416, 15417, 15419, 17012, 25699, 25700, 29539, 29547, 29548,
+        "Green Dragonscale", "Blue Dragonscale", "Black Dragonscale", "Red Dragonscale",
+        "Scorpid Scale", "Worn Dragonscale", "Pristine Hide of the Beast", "Scale of Onyxia",
         -- Hide (Piel)
-        783, 2318, 2319, 4232, 4233, 4234, 4235, 4236, 4304, 5082, 5116, 5784, 7428, 7429, 8169, 8170, 8171, 17012, 25649, 29547, 29548, 33567, 33568, 38425, 44128,
+        "Light Hide", "Medium Hide", "Heavy Hide", "Thick Hide", "Rugged Hide", "Devilsaur Leather",
+        "Chimera Leather", "Core Leather", "Primal Tiger Leather", "Primal Bat Leather",
+        "Black Whelp Scale", "Red Whelp Scale", "Deviate Scale", "Perfect Deviate Scale",
         -- Thread, Salt
-        2320, 2321, 3182, 3824, 4289, 4291, 6260, 14341,
+        "Coarse Thread", "Fine Thread", "Heavy Silken Thread", "Silken Thread", "Deeprock Salt",
+        "Refined Deeprock Salt", "Cured Leather", "Cured Medium Hide", "Cured Heavy Hide",
+        "Cured Thick Hide", "Cured Rugged Hide",
     },
 
     -- ALCHEMY (Alquimia)
     ALCHEMY = {
         -- Herbs (Hierbas)
-        765, 785, 2447, 2449, 2450, 2452, 2453, 3355, 3356, 3357, 3358, 3369, 3818, 3819, 3820, 3821, 4625, 8831, 8836, 8838, 8839, 8845, 8846, 13463, 13464, 13465, 13466, 13467, 13468, 22785, 22786, 22787, 22788, 22789, 22790, 22791, 22792, 22793, 36901, 36903, 36904, 36905, 36906, 36907, 37921, 39970,
-        -- Lotus
-        8153, 13468,
+        "Silverleaf", "Peacebloom", "Earthroot", "Mageroyal", "Briarthorn", "Swiftthistle", "Bruiseweed",
+        "Stranglekelp", "Wild Steelbloom", "Grave Moss", "Kingsblood", "Liferoot", "Fadeleaf", "Goldthorn",
+        "Khadgar's Whisker", "Wintersbite", "Firebloom", "Purple Lotus", "Arthas' Tears", "Sungrass",
+        "Blindweed", "Ghost Mushroom", "Gromsblood", "Golden Sansam", "Dreamfoil", "Mountain Silversage",
+        "Plaguebloom", "Icecap", "Black Lotus", "Felweed", "Dreaming Glory", "Terocone", "Ancient Lichen",
+        "Bloodthistle", "Mana Thistle", "Netherbloom", "Nightmare Vine", "Ragveil", "Flame Cap",
+        "Adder's Tongue", "Tiger Lily", "Talandra's Rose", "Goldclover", "Icethorn", "Lichbloom",
+        "Frozen Herb", "Frost Lotus",
         -- Vials (Viales)
-        3371, 3372, 8925, 18256,
+        "Crystal Vial", "Leaded Vial", "Empty Vial", "Imbued Vial",
         -- Elemental
-        7067, 7068, 7069, 7070, 7071, 7072, 7075, 7076, 7077, 7078, 7079, 7080, 7081, 7082, 12803, 12808, 21884, 21886, 22452, 22451, 35622, 35623, 35624, 35625, 35627, 36860, 37700, 37701, 37702, 37703, 37704, 37705,
+        "Elemental Earth", "Elemental Water", "Elemental Fire", "Elemental Air", "Essence of Earth",
+        "Essence of Water", "Essence of Fire", "Essence of Air", "Heart of Fire", "Globe of Water",
+        "Core of Earth", "Breath of Wind", "Living Essence", "Essence of Undeath", "Ichor of Undeath",
+        "Elemental Fire", "Elemental Water", "Elemental Earth", "Elemental Air", "Mote of Earth",
+        "Mote of Water", "Mote of Fire", "Mote of Air", "Mote of Life", "Mote of Shadow", "Mote of Mana",
+        "Primal Earth", "Primal Water", "Primal Fire", "Primal Air", "Primal Life", "Primal Shadow",
+        "Primal Mana", "Crystallized Earth", "Crystallized Water", "Crystallized Fire", "Crystallized Air",
+        "Crystallized Life", "Crystallized Shadow", "Eternal Earth", "Eternal Water", "Eternal Fire",
+        "Eternal Air", "Eternal Life", "Eternal Shadow", "Frozen Orb",
     },
 
     -- ENGINEERING (Ingeniería)
     ENGINEERING = {
         -- Explosives (Explosivos)
-        4358, 4359, 4360, 4361, 4362, 4363, 4364, 4365, 4366, 4367, 4368, 4369, 4370, 4371, 4377, 4378, 4380, 4382, 4384, 4387, 4389, 4390, 4394, 4404, 10505, 10560, 10561, 10562, 15992, 15994, 16000, 16006, 18631, 21557, 23781, 23782, 23783, 23784, 23785, 23786, 23787, 39682,
+        "Rough Blasting Powder", "Coarse Blasting Powder", "Heavy Blasting Powder", "Solid Blasting Powder",
+        "Dense Blasting Powder", "Rough Dynamite", "Coarse Dynamite", "Heavy Dynamite", "Solid Dynamite",
+        "Dense Dynamite", "Big Iron Bomb", "Mithril Frag Bomb", "Hi-Explosive Bomb", "Thorium Grenade",
+        "Explosive Sheep", "Goblin Land Mine", "EZ-Thro Dynamite", "Fel Iron Bomb", "Adamantite Grenade",
+        "Frost Grenade", "Explosive Decoy", "Super Sapper Charge", "Cobalt Frag Bomb", "Saronite Bomb",
         -- Parts (Piezas)
-        814, 1206, 1210, 1705, 2589, 2592, 3470, 3471, 3575, 4306, 4337, 4338, 4339, 4340, 4341, 4342, 4375, 4377, 4382, 4384, 4387, 4389, 4404, 7191, 7387, 10558, 10559, 10560, 10561, 12359, 12361, 15992, 15994, 16000, 16006, 18631, 21557, 23077, 23079, 23781, 23782, 23783, 23784, 23785, 23786, 32423,
+        "Handful of Copper Bolts", "Copper Tube", "Rough Copper Bomb", "Bronze Tube", "Gyrochronatom",
+        "Iron Strut", "Gold Power Core", "Mithril Tube", "Unstable Trigger", "Thorium Widget",
+        "Arcane Bomb", "Fel Iron Casing", "Hardened Adamantite Tube", "Khorium Power Core",
+        "Adamantite Frame", "Handful of Cobalt Bolts", "Volatile Blasting Trigger", "Froststeel Tube",
         -- Elemental
-        7067, 7068, 7069, 7070, 7071, 7072, 7075, 7076, 7077, 7078, 7079, 7080, 7081, 7082, 12803, 12808,
+        "Elemental Earth", "Elemental Water", "Elemental Fire", "Elemental Air", "Essence of Earth",
+        "Essence of Water", "Essence of Fire", "Essence of Air", "Elemental Blasting Powder",
     },
 
     -- ENCHANTING (Encantamiento)
     ENCHANTING = {
         -- Dust (Polvo)
-        10940, 10998, 11083, 11137, 11176, 16204, 34054, 34055, 34056,
+        "Strange Dust", "Soul Dust", "Vision Dust", "Dream Dust", "Illusion Dust", "Arcane Dust",
+        "Infinite Dust", "Greater Cosmic Essence", "Dream Shard",
         -- Essence (Esencia)
-        10938, 10939, 10978, 10998, 11082, 11084, 11134, 11135, 11174, 11175, 16202, 16203, 34052, 34053, 34055, 34056, 34057,
+        "Lesser Magic Essence", "Greater Magic Essence", "Lesser Astral Essence", "Greater Astral Essence",
+        "Lesser Mystic Essence", "Greater Mystic Essence", "Lesser Nether Essence", "Greater Nether Essence",
+        "Lesser Eternal Essence", "Greater Eternal Essence", "Lesser Planar Essence", "Greater Planar Essence",
+        "Lesser Cosmic Essence", "Greater Cosmic Essence",
         -- Shard (Fragmento)
-        10978, 11084, 11138, 11139, 14343, 14344, 16204, 22449, 22450, 34052, 34053, 34054, 34055, 34056, 34057,
+        "Small Glimmering Shard", "Large Glimmering Shard", "Small Glowing Shard", "Large Glowing Shard",
+        "Small Radiant Shard", "Large Radiant Shard", "Small Brilliant Shard", "Large Brilliant Shard",
+        "Nexus Crystal", "Small Prismatic Shard", "Large Prismatic Shard", "Void Crystal", "Abyss Crystal",
         -- Crystal (Cristal)
-        11174, 11175, 20725, 22448, 22449, 22450,
+        "Nexus Crystal", "Void Crystal", "Abyss Crystal",
         -- Rods, etc
-        6218, 11128, 11144, 11145, 16202, 16203, 16204, 16206, 16207, 17725, 18240, 22461, 22462, 22463, 38682, 38929,
+        "Runed Copper Rod", "Runed Silver Rod", "Runed Golden Rod", "Runed Truesilver Rod",
+        "Runed Arcanite Rod", "Runed Fel Iron Rod", "Runed Adamantite Rod", "Runed Eternium Rod",
+        "Runed Cobalt Rod", "Runed Titanium Rod",
     },
 
     -- COOKING (Cocina)
     COOKING = {
         -- Meat (Carne)
-        769, 1015, 1080, 2251, 2672, 2673, 2674, 2675, 2677, 2886, 3173, 3404, 5465, 5466, 5467, 5468, 5469, 5470, 5471, 5503, 5504, 6289, 6291, 6303, 6308, 6317, 6889, 9681, 12037, 12184, 12202, 12203, 12204, 12205, 12206, 12207, 12208, 21071, 27422, 27425, 27429, 27435, 27437, 27438, 27439, 27516, 27668, 33048, 35562, 35563, 43009, 43010, 43011, 43012, 43013,
+        "Chunk of Boar Meat", "Stringy Wolf Meat", "Bear Meat", "Boar Ribs", "Tender Wolf Meat",
+        "Stormwind Seasoning Herbs", "Goretusk Liver", "Murloc Eye", "Spider Ichor", "Crag Boar Rib",
+        "Meat Cleaver", "Raw Bear Meat", "Crispy Bat Wing", "Goretusk Snout", "Bristle Whisker Catfish",
+        "Mystery Meat", "Red Wolf Meat", "Bear Flank", "Raptor Egg", "Giant Egg", "Clam Meat",
+        "Small Egg", "Worg Haunch", "Crawler Meat", "Coyote Meat", "Slitherskin Mackerel",
+        "Longjaw Mud Snapper", "Loch Frenzy", "Rainbow Fin Albacore", "Rockscale Cod", "Spotted Yellowtail",
+        "Darkclaw Lobster", "Succulent Pork Ribs", "Haunch of Meat", "Cured Ham Steak", "Wild Hog Shank",
         -- Fish (Pescado)
-        4603, 4655, 5503, 5504, 6289, 6291, 6303, 6308, 6317, 6889, 8365, 12184, 13754, 13755, 13756, 13757, 13758, 13759, 13760, 13888, 13889, 13890, 13893, 21071, 21153, 27422, 27425, 27429, 27435, 27437, 27438, 27439, 27516, 33048, 35562, 35563, 41800, 41801, 41802, 41803, 41805, 41806, 41807, 41808, 41809, 41810, 41812, 41813, 41814,
+        "Raw Brilliant Smallfish", "Raw Slitherskin Mackerel", "Raw Longjaw Mud Snapper", "Raw Loch Frenzy",
+        "Raw Rainbow Fin Albacore", "Raw Rockscale Cod", "Raw Mithril Head Trout", "Raw Redgill",
+        "Raw Nightfin Snapper", "Raw Greater Sagefish", "Raw Whitescale Salmon", "Raw Sunscale Salmon",
+        "Stonescale Eel", "Oily Blackmouth", "Firefin Snapper", "Raw Spotted Yellowtail", "Furious Crawdad",
+        "Crescent-Tail Skullfish", "Icefin Bluefish", "Barbed Gill Trout", "Nettlefish", "Fangtooth Herring",
+        "Musselback Sculpin", "Dragonfin Angelfish", "Imperial Manta Ray", "Moonglow Cuttlefish",
+        "Fangtooth Herring", "Glacial Salmon", "Deep Sea Monsterbelly", "Dragonfin Angelfish",
         -- Spices (Especias)
-        2321, 2324, 2325, 2604, 2605, 2678, 2692, 2723, 2724, 2725, 2771, 3182, 3404, 3466, 3713, 3827, 4289, 4399, 4400, 4402, 4404, 5469, 6889, 8150, 8153, 8831, 17194, 17196, 17197, 21153, 30817,
+        "Mild Spices", "Hot Spices", "Soothing Spices", "Refreshing Spring Water", "Ice Cold Milk",
+        "Sweet Nectar", "Moonberry Juice", "Holiday Spices", "Alterac Swiss", "Dalaran Sharp",
+        "Deeprun Rat Kabob", "Savory Deviate Delight", "Gingerbread Cookie", "Egg Nog",
     },
 
     -- FIRST AID (Primeros Auxilios)
     FIRST_AID = {
         -- Cloth for bandages
-        2589, 2592, 4305, 4306, 14047, 14048, 21840, 21841, 33470, 41510, 41511,
+        "Linen Cloth", "Wool Cloth", "Silk Cloth", "Mageweave Cloth", "Runecloth", "Netherweave Cloth",
+        "Frostweave Cloth",
         -- Anti-venom materials
-        3383, 3384, 5996, 6371,
+        "Large Venom Sac", "Small Venom Sac", "Anti-Venom", "Strong Anti-Venom", "Powerful Anti-Venom",
     },
 }
 
--- Build reverse lookup table: itemID -> profession
+-- Build reverse lookup table: itemName -> profession
 local itemToProfession = {}
 for profession, items in pairs(PROFESSION_ITEMS) do
-    for _, itemID in ipairs(items) do
+    for _, itemName in ipairs(items) do
         -- If an item can be used by multiple professions, prioritize the first one
-        if not itemToProfession[itemID] then
-            itemToProfession[itemID] = profession
+        if not itemToProfession[itemName] then
+            itemToProfession[itemName] = profession
         end
     end
 end
@@ -138,11 +200,11 @@ function filter:OnInitialize()
     })
 end
 
--- Get item ID from link or slotData
-function filter:GetItemID(itemLink)
+-- Get item name from link or slotData
+function filter:GetItemName(itemLink)
     if not itemLink then return nil end
-    local itemID = tonumber(itemLink:match("item:(%d+)"))
-    return itemID
+    local itemName = itemLink:match("%[(.+)%]")
+    return itemName
 end
 
 -- Main filter function
@@ -152,14 +214,14 @@ function filter:Filter(slotData)
         return nil
     end
 
-    -- Get item ID
-    local itemID = self:GetItemID(slotData.link)
-    if not itemID then
+    -- Get item name
+    local itemName = self:GetItemName(slotData.link)
+    if not itemName then
         return nil
     end
 
-    -- Check if item belongs to a profession
-    local profession = itemToProfession[itemID]
+    -- Check if item belongs to a profession (by name)
+    local profession = itemToProfession[itemName]
 
     if profession then
         local professionName = PROFESSIONS[profession]

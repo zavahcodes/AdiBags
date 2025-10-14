@@ -35,8 +35,10 @@
 ### New Trade Goods by Profession Filter 🆕
 - **Automatic profession organization**: New filter that separates trade goods into dedicated sections by profession
 - **8 professions supported**: Blacksmithing, Tailoring, Leatherworking, Alchemy, Engineering, Enchanting, Cooking, First Aid
-- **500+ Item IDs database**: Comprehensive database covering all major trade goods in WoW 3.3.5
-- **Lightning-fast performance**: Uses static Item ID lookups for instant classification with zero performance impact
+- **500+ Items database**: Comprehensive database covering all major trade goods in WoW 3.3.5
+- **Name-based matching**: Uses item names instead of IDs for better compatibility with custom servers
+- **Custom server friendly**: Works reliably on servers with modified item IDs (like Ascension WoW)
+- **Lightning-fast performance**: Uses static name lookups for instant classification with zero performance impact
 - **Configurable options**: Choose whether to group unclassified trade goods in a separate section
 - **Smart classification**: Materials automatically sorted by profession type (bars, ores, cloth, leather, herbs, etc.)
 - **No Jewelcrafting/Inscription**: Optimized for servers without these professions
