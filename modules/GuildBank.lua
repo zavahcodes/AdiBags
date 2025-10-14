@@ -47,7 +47,7 @@ function mod:OnEnable()
 	self:RegisterEvent('GUILDBANKBAGSLOTS_CHANGED')
 	self:RegisterEvent('GUILDBANK_UPDATE_TABS')
 
-	-- Set up frame hiding immediately
+	-- Set up frame hiding using AdiBags pattern
 	self:SetupFrameHiding()
 
 	addon:Debug('GuildBank module enabled')
@@ -60,6 +60,14 @@ end
 
 function mod:OnDisable()
 	self:UnregisterAllEvents()
+	
+	-- Restore original GuildBankFrame functionality if it was hooked
+	if GuildBankFrame and self.hooks and self.hooks[GuildBankFrame] then
+		if self.hooks[GuildBankFrame].Show then
+			self.hooks[GuildBankFrame].Show(GuildBankFrame)
+		end
+	end
+	
 	guildBankOpen = false
 	addon:Debug('GuildBank module disabled')
 end
@@ -229,67 +237,29 @@ function mod:SetupTooltip(tooltip, tab, slot)
 end
 
 --------------------------------------------------------------------------------
--- Hide original Guild Bank frame
+-- Hide original Guild Bank frame using AdiBags pattern
 --------------------------------------------------------------------------------
 
--- Function to aggressively hide the original guild bank frame
-local function HideGuildBankFrameCompletely()
+function mod:SetupFrameHiding()
+	-- Use the same pattern as AdiBags uses for BankFrame
 	if GuildBankFrame then
 		GuildBankFrame:Hide()
-		GuildBankFrame:SetAlpha(0)
-		GuildBankFrame:EnableMouse(false)
-
-		-- Move it off screen as backup
-		GuildBankFrame:ClearAllPoints()
-		GuildBankFrame:SetPoint("TOPLEFT", UIParent, "TOPLEFT", -5000, -5000)
-	end
-end
-
--- Setup frame hiding hooks and events
-function mod:SetupFrameHiding()
-	-- Hook the Show function to prevent it from ever showing
-	if GuildBankFrame then
-		local originalShow = GuildBankFrame.Show
-		GuildBankFrame.Show = function(self)
-			-- Block the show completely - do nothing
-			addon:Debug('Blocked original Guild Bank frame from showing')
-			return
+		
+		-- Hook the Show method to prevent the frame from showing
+		self:RawHook(GuildBankFrame, "Show", function() 
+			-- Do nothing - prevents the frame from showing
+			addon:Debug('Blocked GuildBankFrame:Show()')
+		end, true)
+		
+		-- Hook OnEvent to prevent event processing
+		if GuildBankFrame.OnEvent then
+			self:RawHookScript(GuildBankFrame, "OnEvent", function() 
+				-- Do nothing - prevents event processing
+			end, true)
 		end
-
-		-- Also hook SetShown
-		if GuildBankFrame.SetShown then
-			local originalSetShown = GuildBankFrame.SetShown
-			GuildBankFrame.SetShown = function(self, shown)
-				if shown then
-					-- Block showing
-					addon:Debug('Blocked SetShown(true) on Guild Bank frame')
-					return
-				else
-					-- Allow hiding
-					return originalSetShown(self, shown)
-				end
-			end
-		end
-
-		-- Hide it immediately if it exists
-		HideGuildBankFrameCompletely()
+		
+		addon:Debug('GuildBankFrame hooks installed')
+	else
+		addon:Debug('GuildBankFrame not found during setup')
 	end
-end
-
--- Store the original GUILDBANKFRAME_OPENED handler before redefining
-local originalGUILDBANKFRAME_OPENED = mod.GUILDBANKFRAME_OPENED
-
--- Redefine GUILDBANKFRAME_OPENED to include frame hiding
-function mod:GUILDBANKFRAME_OPENED(event)
-	-- Call the original handler first
-	originalGUILDBANKFRAME_OPENED(self, event)
-	
-	-- Hide the frame immediately after processing the event
-	HideGuildBankFrameCompletely()
-
-	-- Schedule additional hides with delay in case frame shows later
-	self:ScheduleTimer(HideGuildBankFrameCompletely, 0.1)
-	self:ScheduleTimer(HideGuildBankFrameCompletely, 0.3)
-end
-
-addon:Debug('GuildBank module loaded')
+endaddon:Debug('GuildBank module loaded')
