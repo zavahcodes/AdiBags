@@ -11,6 +11,7 @@ local L = addon.L
 local _G = _G
 local GameTooltip = _G.GameTooltip
 local UseContainerItem = _G.UseContainerItem
+local AutoStoreGuildBankItem = _G.AutoStoreGuildBankItem
 --GLOBALS>
 
 local mod = addon:NewModule('BankSwitcher', 'AceEvent-3.0')
@@ -41,17 +42,27 @@ end
 function mod:OnClickSectionHeader(_, header, button)
     if button == "RightButton" then
         for slotId, bag, slot in header.section:IterateContainerSlots() do
-            UseContainerItem(bag, slot)
+            -- Check if this is a Guild Bank bag (virtual bags 101-108)
+            if addon:IsGuildBankBag(bag) then
+                -- For Guild Bank, use AutoStoreGuildBankItem
+                local tab = addon:GetGuildBankTab(bag)
+                if tab then
+                    AutoStoreGuildBankItem(tab, slot)
+                end
+            else
+                -- For regular bags, use UseContainerItem
+                UseContainerItem(bag, slot)
+            end
         end
     end
 end
 
 function mod:AdiBags_InteractingWindowChanged(_, new, old)
-    if new == "BANKFRAME" then
+    if new == "BANKFRAME" or new == "GUILDBANKFRAME" then
         addon.RegisterSectionHeaderScript(self, 'OnEnter', 'OnEnterSectionHeader')
         addon.RegisterSectionHeaderScript(self, 'OnLeave', 'OnLeaveSectionHeader')
         addon.RegisterSectionHeaderScript(self, 'OnClick', 'OnClickSectionHeader')
-    elseif old == "BANKFRAME" then
+    elseif old == "BANKFRAME" or old == "GUILDBANKFRAME" then
         addon.UnregisterAllSectionHeaderScripts(self)
     end
 end
