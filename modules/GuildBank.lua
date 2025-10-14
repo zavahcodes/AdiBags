@@ -86,21 +86,22 @@ function mod:GUILDBANKFRAME_OPENED(event)
 	print("GUILD BANK DEBUG: GUILDBANKFRAME_OPENED event fired")
 	print("GUILD BANK DEBUG: GuildBankFrame exists:", GuildBankFrame ~= nil)
 
-	-- CRITICAL: Hide the frame IMMEDIATELY when the event fires
+	-- CRITICAL: Make the frame invisible WITHOUT calling Hide()
+	-- (Hide() triggers GUILDBANKFRAME_CLOSED event which closes AdiBags)
 	if GuildBankFrame then
-		print("GUILD BANK DEBUG: GuildBankFrame:IsShown() BEFORE hide:", GuildBankFrame:IsShown())
-		GuildBankFrame:Hide()
-		print("GUILD BANK DEBUG: GuildBankFrame:IsShown() AFTER hide:", GuildBankFrame:IsShown())
+		print("GUILD BANK DEBUG: GuildBankFrame:IsShown() BEFORE:", GuildBankFrame:IsShown())
 
-		-- Force it to stay hidden with multiple methods
+		-- Make frame invisible and non-interactive WITHOUT calling Hide()
 		GuildBankFrame:SetAlpha(0)
 		GuildBankFrame:EnableMouse(false)
+		GuildBankFrame:EnableKeyboard(false)
 		GuildBankFrame:ClearAllPoints()
-		GuildBankFrame:SetPoint("TOPLEFT", UIParent, "TOPLEFT", -5000, -5000)
-		print("GUILD BANK DEBUG: Applied aggressive hiding methods")
-	end
+		GuildBankFrame:SetPoint("TOPLEFT", UIParent, "TOPLEFT", -10000, -10000)
+		GuildBankFrame:SetScale(0.01)
 
-	addon:Debug('Guild Bank opened')
+		print("GUILD BANK DEBUG: GuildBankFrame:IsShown() AFTER:", GuildBankFrame:IsShown())
+		print("GUILD BANK DEBUG: Frame made invisible without calling Hide()")
+	end	addon:Debug('Guild Bank opened')
 	guildBankOpen = true
 
 	-- Get current tab, default to 1 if not available (Personal Bank case)
@@ -192,11 +193,11 @@ function mod:GUILDBANK_UPDATE_TABS(event)
 
 	-- Send update for the current tab's virtual bag
 	local virtualBagId = 100 + currentTab
-	
+
 	local success, err = pcall(function()
 		addon:SendMessage('AdiBags_BagUpdated', virtualBagId)
 	end)
-	
+
 	if not success then
 		print("GUILD BANK DEBUG: ERROR in GUILDBANK_UPDATE_TABS:", err)
 	end
@@ -308,9 +309,10 @@ function mod:SetupFrameHiding()
 			print("GUILD BANK DEBUG: GuildBankFrame type:", type(GuildBankFrame))
 			print("GUILD BANK DEBUG: GuildBankFrame:IsShown():", GuildBankFrame:IsShown())
 
-			-- Hide the frame immediately
-			GuildBankFrame:Hide()
-			print("GUILD BANK DEBUG: Called GuildBankFrame:Hide()")
+			-- Make frame invisible WITHOUT calling Hide() to avoid triggering GUILDBANKFRAME_CLOSED
+			GuildBankFrame:SetAlpha(0)
+			GuildBankFrame:EnableMouse(false)
+			print("GUILD BANK DEBUG: Made frame invisible without Hide()")
 
 			-- Use the exact same pattern as AdiBags uses for BankFrame
 			self:RawHookScript(GuildBankFrame, "OnEvent", function(...)
