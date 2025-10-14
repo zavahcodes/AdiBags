@@ -44,7 +44,7 @@ local guildBankOpen = false
 function mod:OnEnable()
 	print("GUILD BANK DEBUG: OnEnable called")
 	print("GUILD BANK DEBUG: Initial GuildBankFrame check:", GuildBankFrame ~= nil)
-	
+
 	self:RegisterEvent('GUILDBANKFRAME_OPENED')
 	self:RegisterEvent('GUILDBANKFRAME_CLOSED')
 	self:RegisterEvent('GUILDBANKBAGSLOTS_CHANGED')
@@ -60,7 +60,7 @@ function mod:OnEnable()
 		print("GUILD BANK DEBUG: Guild bank already open, calling GUILDBANKFRAME_OPENED")
 		self:GUILDBANKFRAME_OPENED()
 	end
-	
+
 	print("GUILD BANK DEBUG: OnEnable complete")
 end
 
@@ -85,10 +85,21 @@ end
 function mod:GUILDBANKFRAME_OPENED(event)
 	print("GUILD BANK DEBUG: GUILDBANKFRAME_OPENED event fired")
 	print("GUILD BANK DEBUG: GuildBankFrame exists:", GuildBankFrame ~= nil)
+
+	-- CRITICAL: Hide the frame IMMEDIATELY when the event fires
 	if GuildBankFrame then
-		print("GUILD BANK DEBUG: GuildBankFrame:IsShown():", GuildBankFrame:IsShown())
+		print("GUILD BANK DEBUG: GuildBankFrame:IsShown() BEFORE hide:", GuildBankFrame:IsShown())
+		GuildBankFrame:Hide()
+		print("GUILD BANK DEBUG: GuildBankFrame:IsShown() AFTER hide:", GuildBankFrame:IsShown())
+
+		-- Force it to stay hidden with multiple methods
+		GuildBankFrame:SetAlpha(0)
+		GuildBankFrame:EnableMouse(false)
+		GuildBankFrame:ClearAllPoints()
+		GuildBankFrame:SetPoint("TOPLEFT", UIParent, "TOPLEFT", -5000, -5000)
+		print("GUILD BANK DEBUG: Applied aggressive hiding methods")
 	end
-	
+
 	addon:Debug('Guild Bank opened')
 	guildBankOpen = true
 
@@ -106,7 +117,23 @@ function mod:GUILDBANKFRAME_OPENED(event)
 	-- Send update for the current tab's virtual bag
 	local virtualBagId = 100 + currentTab
 	addon:SendMessage('AdiBags_BagUpdated', virtualBagId)
-	
+
+	-- Aggressive continuous hiding
+	local function ForceHideFrame()
+		if GuildBankFrame and GuildBankFrame:IsShown() then
+			print("GUILD BANK DEBUG: Frame still visible, forcing hide again")
+			GuildBankFrame:Hide()
+			GuildBankFrame:SetAlpha(0)
+			GuildBankFrame:EnableMouse(false)
+		end
+	end
+
+	-- Schedule multiple forced hides
+	self:ScheduleTimer(ForceHideFrame, 0.1)
+	self:ScheduleTimer(ForceHideFrame, 0.3)
+	self:ScheduleTimer(ForceHideFrame, 0.5)
+	self:ScheduleTimer(ForceHideFrame, 1.0)
+
 	print("GUILD BANK DEBUG: GUILDBANKFRAME_OPENED processing complete")
 end
 
@@ -254,49 +281,49 @@ end
 -- Hide original Guild Bank frame using AdiBags pattern
 --------------------------------------------------------------------------------
 
-local function NOOP() 
+local function NOOP()
 	print("GUILD BANK DEBUG: NOOP function called")
 end
 
 function mod:SetupFrameHiding()
 	print("GUILD BANK DEBUG: SetupFrameHiding called")
-	
+
 	-- Wait for GuildBankFrame to be created and then hook it
 	local function SetupHooks()
 		print("GUILD BANK DEBUG: SetupHooks called, GuildBankFrame exists:", GuildBankFrame ~= nil)
-		
+
 		if GuildBankFrame then
 			print("GUILD BANK DEBUG: Found GuildBankFrame, setting up hooks")
 			print("GUILD BANK DEBUG: GuildBankFrame type:", type(GuildBankFrame))
 			print("GUILD BANK DEBUG: GuildBankFrame:IsShown():", GuildBankFrame:IsShown())
-			
+
 			-- Hide the frame immediately
 			GuildBankFrame:Hide()
 			print("GUILD BANK DEBUG: Called GuildBankFrame:Hide()")
-			
+
 			-- Use the exact same pattern as AdiBags uses for BankFrame
 			self:RawHookScript(GuildBankFrame, "OnEvent", function(...)
 				print("GUILD BANK DEBUG: OnEvent hook called with args:", ...)
 				-- Block all events
 			end, true)
-			
+
 			self:RawHook(GuildBankFrame, "Show", function()
 				print("GUILD BANK DEBUG: Show() hook called - BLOCKING")
 				-- Do nothing to block showing
 			end, true)
-			
+
 			self:RawHook(GuildBankFrame, "Hide", function()
 				print("GUILD BANK DEBUG: Hide() hook called")
 				-- Allow hiding
 			end, true)
-			
+
 			if GuildBankFrame.IsShown then
-				self:RawHook(GuildBankFrame, "IsShown", function() 
+				self:RawHook(GuildBankFrame, "IsShown", function()
 					print("GUILD BANK DEBUG: IsShown() hook called - returning false")
-					return false 
+					return false
 				end, true)
 			end
-			
+
 			print("GUILD BANK DEBUG: All hooks installed successfully")
 			addon:Debug('GuildBankFrame hooks installed successfully')
 			return true
