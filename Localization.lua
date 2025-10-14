@@ -62,7 +62,7 @@ addon.BI = LibStub('LibBabble-Inventory-3.0'):GetLookupTable()
 L["AdiBags Anchor"] = true
 L["Backpack"] = true
 L["Bank"] = true
-L["Guild Bank"] = "Personal Bank"
+L["Guild Bank"] = true
 L["Guild Bank Support"] = true
 L["Display guild bank contents in AdiBags (read-only mode)."] = true
 
