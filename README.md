@@ -6,6 +6,17 @@
 ## 🚀 Latest Improvements (October 2025)
 <details open> <summary> Click to see recent enhancements: </summary>
 
+### Personal Bank (Guild Bank) Support 🆕
+- **Full Personal Bank integration**: Complete support for Personal Bank system (Guild Bank on Ascension WoW)
+- **8 virtual tabs**: Access all Personal Bank tabs directly within AdiBags interface
+- **Seamless experience**: Original Guild Bank frame automatically hidden while using AdiBags
+- **Smart frame management**: Frame remains invisible but functional, properly closes when you're done
+- **DataStore compatibility**: Built-in compatibility module for DataStore_Containers addon
+- **No guild required**: Works perfectly on servers with Personal Bank systems
+- **Item interactions**: Full support for tooltips, item clicks, and drag-and-drop operations
+- **Clean UI**: Custom title shows "Personal Bank" for better clarity
+- **Zero configuration**: Works automatically when you open Personal Bank
+
 ### New Trade Goods by Profession Filter 🆕
 - **Automatic profession organization**: New filter that separates trade goods into dedicated sections by profession
 - **8 professions supported**: Blacksmithing, Tailoring, Leatherworking, Alchemy, Engineering, Enchanting, Cooking, First Aid
@@ -68,6 +79,7 @@
 These improvements make bag management more intuitive, prevent accidental disposal of useful items, and provide much better readability for high-stack items!
 
 **📚 Full Documentation:**
+- [Personal Bank (Guild Bank) - User Guide](GUILD_BANK_README.md)
 - [Trade Goods by Profession - User Guide](PROFESSION_FILTER_README.md)
 - [Adding Items to Profession Filter - Developer Guide](ADDING_ITEMS_GUIDE.md)
 </details>
