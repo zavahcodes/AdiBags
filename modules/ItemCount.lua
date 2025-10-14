@@ -252,15 +252,20 @@ function mod:ScanBank()
 		data.bank = 0
 	end
 
-	-- Scan bank container (bag -1, slots 1-28)
-	for slot = 1, 28 do
-		local link = GetInventoryItemLink('player', slot + 39) -- Bank slots are inventory slots 40-67
-		if link then
-			local itemID = GetItemIDFromLink(link)
-			if itemID then
-				local _, count = GetInventoryItemCount('player', slot + 39)
-				charData.items[itemID] = charData.items[itemID] or {}
-				charData.items[itemID].bank = (charData.items[itemID].bank or 0) + (count or 1)
+	-- Scan main bank container (bag -1, slots 1-28)
+	-- In WoW 3.3.5, bank uses BANK_CONTAINER (-1) with GetContainerItemInfo/Link
+	local BANK_CONTAINER = -1
+	local numBankSlots = GetContainerNumSlots(BANK_CONTAINER)
+	if numBankSlots > 0 then
+		for slot = 1, numBankSlots do
+			local _, count = GetContainerItemInfo(BANK_CONTAINER, slot)
+			local link = GetContainerItemLink(BANK_CONTAINER, slot)
+			if link then
+				local itemID = GetItemIDFromLink(link)
+				if itemID then
+					charData.items[itemID] = charData.items[itemID] or {}
+					charData.items[itemID].bank = (charData.items[itemID].bank or 0) + (count or 1)
+				end
 			end
 		end
 	end
@@ -268,14 +273,16 @@ function mod:ScanBank()
 	-- Scan bank bags (5-11)
 	for bag = 5, 11 do
 		local numSlots = GetContainerNumSlots(bag)
-		for slot = 1, numSlots do
-			local _, count = GetContainerItemInfo(bag, slot)
-			local link = GetContainerItemLink(bag, slot)
-			if link then
-				local itemID = GetItemIDFromLink(link)
-				if itemID then
-					charData.items[itemID] = charData.items[itemID] or {}
-					charData.items[itemID].bank = (charData.items[itemID].bank or 0) + (count or 1)
+		if numSlots and numSlots > 0 then
+			for slot = 1, numSlots do
+				local _, count = GetContainerItemInfo(bag, slot)
+				local link = GetContainerItemLink(bag, slot)
+				if link then
+					local itemID = GetItemIDFromLink(link)
+					if itemID then
+						charData.items[itemID] = charData.items[itemID] or {}
+						charData.items[itemID].bank = (charData.items[itemID].bank or 0) + (count or 1)
+					end
 				end
 			end
 		end
