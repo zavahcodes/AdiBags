@@ -152,13 +152,20 @@ function mod:HookDataStore()
 		return
 	end
 
-	-- Strategy: Always return fake guild if no real guild exists
-	-- Create fake guild structure IMMEDIATELY so it's ready
+	-- Strategy: Only hook if we detect Personal Bank (no real guild)
+	-- Check if player has a real guild first
+	local realGuildName = GetGuildInfo("player")
+	local hasRealGuild = realGuildName and realGuildName ~= ""
 
-	local original_GetGuildInfo = GetGuildInfo
-	local fakeGuildName = "Personal Bank"
+	-- If player has a real guild, don't hook anything - let DataStore work normally
+	if hasRealGuild then
+		dataStoreHooked = true
+		return
+	end
 
+	-- No real guild detected - this is a Personal Bank situation
 	-- Create fake guild structure NOW (not later)
+	local fakeGuildName = "Personal Bank"
 	local fakeGuild, fakeGuildKey = CreateFakeGuild(DataStore)
 
 	if not fakeGuild then
@@ -166,19 +173,18 @@ function mod:HookDataStore()
 		return
 	end
 
-	-- Hook GetGuildInfo GLOBALLY to always return fake guild when no real guild exists
+	-- Hook GetGuildInfo ONLY for Personal Bank scenario
+	local original_GetGuildInfo = GetGuildInfo
 	_G.GetGuildInfo = function(unit, ...)
 		local realGuild = original_GetGuildInfo(unit, ...)
 
-		-- Silent operation now that we know it works
-
-		-- If there's a real guild, return it
+		-- If there's a real guild now, return it (player might have joined a guild)
 		if realGuild and realGuild ~= "" then
 			return realGuild, ...
 		end
 
 		-- If no real guild and we're the player, return fake guild
-		-- This ensures GetThisGuild() always finds something
+		-- This ensures GetThisGuild() always finds something for Personal Bank
 		if unit == "player" then
 			return fakeGuildName
 		end
