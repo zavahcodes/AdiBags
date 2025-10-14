@@ -84,24 +84,21 @@ function mod:GUILDBANKFRAME_OPENED(event)
 
 	-- CRITICAL: Make the frame invisible WITHOUT calling Hide()
 	-- (Hide() triggers GUILDBANKFRAME_CLOSED event which closes AdiBags)
+	-- We keep it in UISpecialFrames so ESC key works properly - when ESC is pressed,
+	-- it will trigger GUILDBANKFRAME_CLOSED which will close our AdiBags too
 	if GuildBankFrame then
 		-- Make frame invisible and non-interactive WITHOUT calling Hide()
 		GuildBankFrame:SetAlpha(0)
 		GuildBankFrame:EnableMouse(false)
-		GuildBankFrame:EnableKeyboard(false)
+		-- DON'T disable keyboard! We need ESC to work on this frame
+		-- GuildBankFrame:EnableKeyboard(false)
 		GuildBankFrame:ClearAllPoints()
 		GuildBankFrame:SetPoint("TOPLEFT", UIParent, "TOPLEFT", -10000, -10000)
 		GuildBankFrame:SetScale(0.01)
 
-		-- CRITICAL: Remove from UISpecialFrames to prevent ESC key blocking
-		-- When GuildBankFrame is in UISpecialFrames, it intercepts ESC even when invisible
-		for i, frame in ipairs(UISpecialFrames) do
-			if frame == "GuildBankFrame" then
-				tremove(UISpecialFrames, i)
-				addon:Debug('Removed GuildBankFrame from UISpecialFrames to fix ESC key')
-				break
-			end
-		end
+		-- Keep GuildBankFrame in UISpecialFrames! This allows ESC to work properly
+		-- When ESC is pressed, it will close GuildBankFrame which triggers GUILDBANKFRAME_CLOSED
+		addon:Debug('GuildBankFrame kept in UISpecialFrames for ESC key support')
 	end
 	guildBankOpen = true
 
@@ -125,24 +122,10 @@ function mod:GUILDBANKFRAME_CLOSED(event)
 	addon:Debug('Guild Bank closed')
 	guildBankOpen = false
 
-	-- CRITICAL: Re-add GuildBankFrame to UISpecialFrames
-	-- This is necessary because we removed it in GUILDBANKFRAME_OPENED
-	-- DON'T restore visibility - the frame is already closed by WoW
-	if GuildBankFrame then
-		local found = false
-		for _, frame in ipairs(UISpecialFrames) do
-			if frame == "GuildBankFrame" then
-				found = true
-				break
-			end
-		end
-		if not found then
-			tinsert(UISpecialFrames, "GuildBankFrame")
-			addon:Debug('Re-added GuildBankFrame to UISpecialFrames after GUILDBANKFRAME_CLOSED')
-		end
-	end
+	-- GuildBankFrame is already in UISpecialFrames (we never removed it)
+	-- No need to manipulate UISpecialFrames here
 
-	-- Trigger cleanup
+	-- Trigger cleanup to update AdiBags and close our Guild Bank display
 	self:UpdateGuildBank()
 end
 
