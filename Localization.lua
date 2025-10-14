@@ -268,6 +268,12 @@ L["Put items of poor quality or labeled as junk in the \"Junk\" section."] = tru
 -- modules/MoneyFrame.lua
 L["Display character money at bottom right of the backpack."] = true
 L["Money"] = true
+L["Gold Across Characters"] = true
+L["Total"] = true
+
+-- modules/GoldTracker.lua
+L["Gold Tracker"] = true
+L["Track gold amounts for all characters on this realm."] = true
 
 -- modules/NewItemTracking.lua
 L["Click to reset item status."] = true
@@ -1056,6 +1062,10 @@ elseif locale == 'esES' then
     L["Merge incomplete stacks with complete ones."] = "Combinar montones incompletos con completos."
     L["Merge stackable items"] = "Unir objetos apilables"
     L["Money"] = "Dinero"
+    L["Gold Across Characters"] = "Oro en todos los personajes"
+    L["Total"] = "Total"
+    L["Gold Tracker"] = "Rastreador de oro"
+    L["Track gold amounts for all characters on this realm."] = "Rastrea la cantidad de oro de todos los personajes en este reino."
     L["New"] = "Nuevo"
     L["New item highlight"] = "Resaltar Objetos nuevos (acction to do)  -  Nuevos objetos resaltados ( action done)"
     L["One section per set"] = "Una seccion por grupo"
