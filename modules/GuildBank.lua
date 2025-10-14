@@ -50,6 +50,9 @@ function mod:OnEnable()
 	self:RegisterEvent('GUILDBANKBAGSLOTS_CHANGED')
 	self:RegisterEvent('GUILDBANK_UPDATE_TABS')
 
+	-- Listen for when AdiBags Guild Bank bag closes
+	self:RegisterMessage('AdiBags_BagClosed')
+
 	-- Set up frame hiding using AdiBags pattern
 	self:SetupFrameHiding()
 
@@ -136,11 +139,29 @@ function mod:GUILDBANKFRAME_OPENED(event)
 end
 
 function mod:GUILDBANKFRAME_CLOSED(event)
+	print("GUILD BANK DEBUG: GUILDBANKFRAME_CLOSED event fired")
 	addon:Debug('Guild Bank closed')
 	guildBankOpen = false
 
 	-- Trigger cleanup
 	self:UpdateGuildBank()
+end
+
+function mod:AdiBags_BagClosed(event, bagName, bag)
+	print("GUILD BANK DEBUG: AdiBags_BagClosed event fired for bag:", bagName)
+
+	-- Check if it's the GuildBank bag that was closed
+	if bagName == "GuildBank" and guildBankOpen then
+		print("GUILD BANK DEBUG: User closed AdiBags Guild Bank window, closing original frame")
+
+		-- Now it's safe to call Hide() to properly close the GuildBankFrame
+		if GuildBankFrame then
+			GuildBankFrame:Hide()
+			print("GUILD BANK DEBUG: Called GuildBankFrame:Hide() to close it properly")
+		end
+
+		guildBankOpen = false
+	end
 end
 
 function mod:GUILDBANKBAGSLOTS_CHANGED(event, tab, slot)
