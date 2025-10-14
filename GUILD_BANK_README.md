@@ -65,6 +65,16 @@ Guild Bank Tab 8 = Bag ID 108
 5. **AdiBags.toc**
    - Added modules/GuildBank.lua to load order
 
+### ESC Key Handling
+
+The Guild Bank module uses a clever approach to handle the ESC key properly:
+
+1. **Original Frame Kept Functional**: The GuildBankFrame is made invisible (alpha=0, off-screen) but remains in `UISpecialFrames` and keyboard-enabled
+2. **ESC Key Flow**: When ESC is pressed → GuildBankFrame (in UISpecialFrames) closes → Triggers `GUILDBANKFRAME_CLOSED` event → AdiBags closes its Guild Bank window
+3. **No Blocking**: This approach prevents ESC key from becoming blocked, allowing it to work normally after closing the Guild Bank
+
+**Why This Works**: Instead of fighting against WoW's built-in ESC handling, we leverage it. The invisible GuildBankFrame still responds to ESC properly, which naturally closes both the original frame and our AdiBags display.
+
 ### API Functions
 
 #### Helper Functions (AdiBags.lua)
