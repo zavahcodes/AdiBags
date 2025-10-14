@@ -16,6 +16,7 @@ This feature adds Personal Bank (Guild Bank system) support to AdiBags for WoW 3
 - **Custom Color**: Personal Bank window has a green background color to distinguish it from regular bags
 - **Original Frame Hidden**: The default Guild Bank frame is automatically hidden while AdiBags is showing
 - **DataStore Compatibility**: Built-in module to prevent errors from DataStore_Containers addon
+- **Category-based Item Movement**: Right-click on any section header to automatically move all items from that category to your inventory
 
 ### 🔄 Current Behavior
 - Personal Bank items are displayed in **read-only mode** from AdiBags perspective
@@ -84,9 +85,8 @@ addon:GetGuildBankItemID(bag, slot)     -- Extracts itemID from link
 ## Known Limitations
 
 1. **Single Tab View**: Only the currently selected tab is shown (WoW API limitation)
-2. **Read-Only Display**: Items can't be moved via drag-drop from AdiBags interface (use right-click from inventory or the original frame)
+2. **Limited Drag-Drop**: Items can't be moved via drag-drop from AdiBags interface, but you can right-click individual items or right-click section headers to move entire categories
 3. **Query Delay**: First time opening a tab may have a slight delay while data loads
-4. **Visual Only**: This is by design - prevents accidental reorganization while providing AdiBags filtering benefits
 
 ## Ascension Personal Bank Compatibility
 
