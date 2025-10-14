@@ -24,7 +24,7 @@ local GetItemInfo = _G.GetItemInfo
 local time = _G.time
 --GLOBALS>
 
-local mod = addon:NewModule('ItemCount', 'AceEvent-3.0')
+local mod = addon:NewModule('ItemCount', 'AceEvent-3.0', 'AceTimer-3.0')
 mod.uiName = L['Item Count']
 mod.uiDesc = L['Track items across characters and display counts in tooltips.']
 
