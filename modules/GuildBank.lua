@@ -125,6 +125,22 @@ function mod:GUILDBANKFRAME_CLOSED(event)
 	addon:Debug('Guild Bank closed')
 	guildBankOpen = false
 
+	-- Re-add GuildBankFrame to UISpecialFrames when it closes
+	-- This restores normal ESC key functionality
+	if GuildBankFrame then
+		local found = false
+		for _, frame in ipairs(UISpecialFrames) do
+			if frame == "GuildBankFrame" then
+				found = true
+				break
+			end
+		end
+		if not found then
+			tinsert(UISpecialFrames, "GuildBankFrame")
+			addon:Debug('Re-added GuildBankFrame to UISpecialFrames after GUILDBANKFRAME_CLOSED')
+		end
+	end
+
 	-- Trigger cleanup
 	self:UpdateGuildBank()
 end
