@@ -15,7 +15,7 @@ local pairs = _G.pairs
 local table = _G.table
 --GLOBALS>
 
-local mod = addon:NewModule('MoneyFrame', 'AceEvent-3.0')
+local mod = addon:NewModule('MoneyFrame', 'AceEvent-3.0', 'AceTimer-3.0')
 mod.uiName = L['Money']
 mod.uiDesc = L['Display character money at bottom right of the backpack.']
 
@@ -39,7 +39,7 @@ function mod:OnBagFrameCreated(bag)
 	self.widget:SetHeight(19)
 	frame:AddBottomWidget(self.widget, "RIGHT", 50, nil, 13, 0)
 
-	-- Enable mouse interaction for tooltip
+	-- Enable mouse interaction for tooltip on the main frame
 	self.widget:EnableMouse(true)
 	self.widget:SetScript("OnEnter", function(self)
 		mod:ShowGoldTooltip(self)
@@ -47,6 +47,30 @@ function mod:OnBagFrameCreated(bag)
 	self.widget:SetScript("OnLeave", function(self)
 		GameTooltip:Hide()
 	end)
+
+	-- Also enable tooltip on all child buttons (Gold, Silver, Copper buttons)
+	-- The MoneyFrameTemplate creates these buttons automatically
+	local function SetupChildTooltips(parent)
+		local regions = {parent:GetChildren()}
+		for _, child in pairs(regions) do
+			if child:GetObjectType() == "Button" then
+				child:SetScript("OnEnter", function(self)
+					mod:ShowGoldTooltip(self:GetParent())
+				end)
+				child:SetScript("OnLeave", function(self)
+					GameTooltip:Hide()
+				end)
+			end
+		end
+	end
+
+	-- Set up tooltips on child buttons after a short delay to ensure they exist
+	if _G.C_Timer then
+		_G.C_Timer.After(0.1, function() SetupChildTooltips(self.widget) end)
+	else
+		-- Fallback for older clients
+		self:ScheduleTimer(function() SetupChildTooltips(self.widget) end, 0.1)
+	end
 end
 
 function mod:ShowGoldTooltip(frame)
