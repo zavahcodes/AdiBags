@@ -26,16 +26,19 @@ local db
 
 function mod:OnInitialize()
 	-- Initialize the saved variable
-	if not AdiBagsGoldTrackerDB then
-		AdiBagsGoldTrackerDB = {}
+	if not _G.AdiBagsGoldTrackerDB then
+		_G.AdiBagsGoldTrackerDB = {}
 	end
-	db = AdiBagsGoldTrackerDB
+	db = _G.AdiBagsGoldTrackerDB
 
 	-- Get current realm
 	local realm = GetRealmName()
 	if not db[realm] then
 		db[realm] = {}
 	end
+	
+	-- Force enable this module always (it needs to track gold even when not visible)
+	self:SetEnabledState(true)
 end
 
 function mod:OnEnable()
@@ -44,6 +47,9 @@ function mod:OnEnable()
 
 	-- Update gold immediately on enable
 	self:UpdateGold()
+	
+	-- Print confirmation message
+	print("|cff00ff00AdiBags GoldTracker:|r Module enabled and tracking gold")
 end
 
 function mod:OnDisable()
@@ -55,6 +61,12 @@ function mod:UpdateGold()
 	local playerName = UnitName("player")
 	local realm = GetRealmName()
 	local currentGold = GetMoney()
+	
+	-- Ensure db is initialized
+	if not _G.AdiBagsGoldTrackerDB then
+		_G.AdiBagsGoldTrackerDB = {}
+	end
+	db = _G.AdiBagsGoldTrackerDB
 
 	if not db[realm] then
 		db[realm] = {}
@@ -65,14 +77,32 @@ function mod:UpdateGold()
 		gold = currentGold,
 		lastUpdate = time()
 	}
+	
+	-- Debug message
+	print(string.format("|cff00ff00AdiBags GoldTracker:|r Updated %s on %s with %d copper", playerName, realm, currentGold))
 end
 
 -- Get all characters gold data for current realm
 function mod:GetRealmGoldData()
 	local realm = GetRealmName()
-	if not db[realm] then
-		return {}
+	
+	-- Ensure db is initialized
+	if not _G.AdiBagsGoldTrackerDB then
+		_G.AdiBagsGoldTrackerDB = {}
 	end
+	db = _G.AdiBagsGoldTrackerDB
+	
+	if not db[realm] then
+		db[realm] = {}
+	end
+	
+	-- Count characters for debug
+	local count = 0
+	for _ in pairs(db[realm]) do
+		count = count + 1
+	end
+	self:Debug('GetRealmGoldData for', realm, '- Found', count, 'characters')
+	
 	return db[realm]
 end
 
@@ -130,4 +160,23 @@ function mod:FormatMoney(amount)
 	end
 
 	return str
+end
+
+-- Slash command for debugging
+_G.SLASH_ADIBAGSGOLD1 = "/adibagsgold"
+_G.SlashCmdList["ADIBAGSGOLD"] = function(msg)
+	local realm = GetRealmName()
+	print("|cff00ff00AdiBags GoldTracker Debug:|r")
+	print("Realm: " .. realm)
+	print("Database exists: " .. tostring(_G.AdiBagsGoldTrackerDB ~= nil))
+	
+	if _G.AdiBagsGoldTrackerDB and _G.AdiBagsGoldTrackerDB[realm] then
+		print("Characters on this realm:")
+		for charName, data in pairs(_G.AdiBagsGoldTrackerDB[realm]) do
+			local goldFormatted = mod:FormatMoney(data.gold)
+			print("  " .. charName .. ": " .. goldFormatted .. " (" .. data.gold .. " copper)")
+		end
+	else
+		print("No data for this realm yet")
+	end
 end

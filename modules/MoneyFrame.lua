@@ -50,9 +50,14 @@ function mod:OnBagFrameCreated(bag)
 end
 
 function mod:ShowGoldTooltip(frame)
-	-- Check if GoldTracker module exists and is enabled
+	-- Check if GoldTracker module exists
 	local goldTracker = addon:GetModule('GoldTracker', true)
 	if not goldTracker then
+		-- Fallback to default tooltip
+		GameTooltip:SetOwner(frame, "ANCHOR_TOP")
+		GameTooltip:ClearLines()
+		GameTooltip:AddLine(L["Money"], 1, 1, 1)
+		GameTooltip:Show()
 		return
 	end
 
@@ -66,10 +71,24 @@ function mod:ShowGoldTooltip(frame)
 	-- Get all character gold data
 	local realmData = goldTracker:GetRealmGoldData()
 
+	-- Count characters
+	local charCount = 0
+	for _ in pairs(realmData) do
+		charCount = charCount + 1
+	end
+
+	-- If no data, show a message
+	if charCount == 0 then
+		GameTooltip:AddLine("No character data yet", 0.8, 0.8, 0.8)
+		GameTooltip:AddLine("Login with characters to track gold", 0.6, 0.6, 0.6)
+		GameTooltip:Show()
+		return
+	end
+
 	-- Sort characters by name
 	local sortedChars = {}
 	for charName, data in pairs(realmData) do
-		table.insert(sortedChars, {name = charName, gold = data.gold})
+		table.insert(sortedChars, {name = charName, gold = data.gold or 0})
 	end
 	table.sort(sortedChars, function(a, b) return a.name < b.name end)
 
