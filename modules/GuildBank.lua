@@ -125,8 +125,9 @@ function mod:GUILDBANKFRAME_CLOSED(event)
 	addon:Debug('Guild Bank closed')
 	guildBankOpen = false
 
-	-- Re-add GuildBankFrame to UISpecialFrames when it closes
-	-- This restores normal ESC key functionality
+	-- CRITICAL: Re-add GuildBankFrame to UISpecialFrames
+	-- This is necessary because we removed it in GUILDBANKFRAME_OPENED
+	-- DON'T restore visibility - the frame is already closed by WoW
 	if GuildBankFrame then
 		local found = false
 		for _, frame in ipairs(UISpecialFrames) do
@@ -153,22 +154,9 @@ function mod:AdiBags_BagClosed(event, bagName, bag)
 			CloseGuildBankFrame()
 		end
 
-		-- Also hide the frame visually
+		-- Make sure the frame is hidden (CloseGuildBankFrame should trigger GUILDBANKFRAME_CLOSED)
 		if GuildBankFrame then
 			GuildBankFrame:Hide()
-
-			-- Re-add to UISpecialFrames so it works normally next time
-			local found = false
-			for _, frame in ipairs(UISpecialFrames) do
-				if frame == "GuildBankFrame" then
-					found = true
-					break
-				end
-			end
-			if not found then
-				tinsert(UISpecialFrames, "GuildBankFrame")
-				addon:Debug('Re-added GuildBankFrame to UISpecialFrames')
-			end
 		end
 
 		guildBankOpen = false
