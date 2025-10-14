@@ -64,6 +64,8 @@ modules\RefreshLayout.lua
 modules\ItemLevel.lua
 modules\BankSwitcher.lua
 modules\ProfessionTradeGoods.lua
+modules\GuildBank.lua
+modules\DataStoreCompat.lua
 
 DefaultFilters.lua
 

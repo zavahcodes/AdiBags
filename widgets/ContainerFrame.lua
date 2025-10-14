@@ -22,6 +22,9 @@ local GetContainerItemLink = _G.GetContainerItemLink
 local GetContainerNumFreeSlots = _G.GetContainerNumFreeSlots
 local GetContainerNumSlots = _G.GetContainerNumSlots
 local GetCursorInfo = _G.GetCursorInfo
+local GetGuildBankItemInfo = _G.GetGuildBankItemInfo
+local GetGuildBankItemLink = _G.GetGuildBankItemLink
+local GetGuildBankTabInfo = _G.GetGuildBankTabInfo
 local GetItemFamily = _G.GetItemFamily
 local GetItemInfo = _G.GetItemInfo
 local GetMerchantItemLink = _G.GetMerchantItemLink
@@ -61,11 +64,11 @@ local ToggleDropDownMenu = ToggleDropDownMenu
 
 local menuFrame = CreateFrame("Frame", "menuFrame", UIParent, "UIDropDownMenuTemplate")
 local menuList = {
-	{text = "|TInterface\\Buttons\\UI-Panel-MinimizeButton-Up:24|t |cffFFA500Close|r", func = function() CloseMenus() end, 
+	{text = "|TInterface\\Buttons\\UI-Panel-MinimizeButton-Up:24|t |cffFFA500Close|r", func = function() CloseMenus() end,
 	fontObject = GameFontNormalLarge},
 
 	{text = "  ", notClickable = true},
-	{text = "  |TInterface\\Icons\\INV_Misc_Spyglass_03:20|t    "..L["Reset bag position"], func = function() addon:ResetBagPositions() end},	
+	{text = "  |TInterface\\Icons\\INV_Misc_Spyglass_03:20|t    "..L["Reset bag position"], func = function() addon:ResetBagPositions() end},
 	{text = "  |TInterface\\Icons\\INV_Misc_Spyglass_03:20|t    "..L["Unlock Anchor"], func = function() addon:ToggleAnchor() end},
 	{text = "  |TInterface\\Icons\\INV_TradeskillItem_03:20|t    "..L["Manual Filtering"], func = function() addon:OpenOptions("filters", "FilterOverride") end},
 	{text = "  |TInterface\\Icons\\INV_Misc_Gear_01:20|t    "..L["Settings"], func = function() addon:OpenOptions() end},
@@ -74,14 +77,14 @@ local menuList = {
 local menuFrame2 = CreateFrame("Frame", "menuFrame2", UIParent, "UIDropDownMenuTemplate")
 
 local menuList2 = {
-	{text = "|TInterface\\Buttons\\UI-Panel-MinimizeButton-Up:24|t |cffFFA500Close|r", func = function() CloseMenus() end, 
+	{text = "|TInterface\\Buttons\\UI-Panel-MinimizeButton-Up:24|t |cffFFA500Close|r", func = function() CloseMenus() end,
 	fontObject = GameFontNormalLarge},
 
 	{text = "  ", notClickable = true},
 	{text = "  |TInterface\\Icons\\INV_Misc_Spyglass_03:20|t    "..L["Reset bag position"], func = function() addon:ResetBagPositions() end},
 	{text = "  |TInterface\\Icons\\INV_TradeskillItem_03:20|t    "..L["Manual Filtering"], func = function() addon:OpenOptions("filters", "FilterOverride") end},
 	{text = "  |TInterface\\Icons\\INV_Misc_Gear_01:20|t    "..L["Settings"], func = function() addon:OpenOptions() end},
-	
+
 }
 
 --------------------------------------------------------------------------------
@@ -239,9 +242,9 @@ function containerProto:OnCreate(name, bagIds, isBank)
 			GameTooltip:SetText("\124cFF00FF00"..L["Anchored"].."\124r\124cff00bfff "..L["Mode"].."\124r")
 			GameTooltip:AddLine(" ")
 			GameTooltip:AddLine("|cffeda55f"..L["Click"].."|r |cff99ff00"..L["to toggle the anchor."].."|r")
-			GameTooltip:AddLine("|cffeda55f"..L["Shift-Click"].."|r |cff99ff00"..L["to open bag menu."].."|r")			
+			GameTooltip:AddLine("|cffeda55f"..L["Shift-Click"].."|r |cff99ff00"..L["to open bag menu."].."|r")
 			GameTooltip:AddLine("|cffeda55f"..L["Right-Click"].."|r |cff99ff00"..L["to open AdiBags options."].."|r")
-			GameTooltip:AddLine("|cffeda55f"..L["Alt-Left-Click"].."|r |cff99ff00"..L["to toggle anchor mode."].."|r")				
+			GameTooltip:AddLine("|cffeda55f"..L["Alt-Left-Click"].."|r |cff99ff00"..L["to toggle anchor mode."].."|r")
 			GameTooltip:SetBackdropColor(0, 0, 0, 1) -- Change the alpha value here
 			GameTooltip:Show()
 		end
@@ -387,7 +390,7 @@ function containerProto:OnCreate(name, bagIds, isBank)
 			end
 
 			GameTooltip:AddLine("|cffeda55f"..L["Right-Click"].."|r |cff99ff00"..L["to open AdiBags options."].."|r")
-			GameTooltip:AddLine("|cffeda55f"..L["Alt-Left-Click"].."|r |cff99ff00"..L["to toggle anchor mode."].."|r")	
+			GameTooltip:AddLine("|cffeda55f"..L["Alt-Left-Click"].."|r |cff99ff00"..L["to toggle anchor mode."].."|r")
 			GameTooltip:SetBackdropColor(0, 0, 0, 1) -- Change the alpha value here
 			GameTooltip:Show()
 		end
@@ -424,7 +427,7 @@ function containerProto:OnCreate(name, bagIds, isBank)
 				if IsAltKeyDown() then
 
 					addon:ToggleCurrentLayout()
-					
+
 				elseif addon.db.profile.clickMode == 0 and IsShiftKeyDown() then
 
 					self:StartMoving()
@@ -461,7 +464,7 @@ function containerProto:OnCreate(name, bagIds, isBank)
 
 				self:StopMoving()
 				self.isMovingContainer = false
-				if not self.isMovingContainer then 
+				if not self.isMovingContainer then
 
 					CloseMenus()
 					if addon.db.profile.showAnchorTooltip then
@@ -474,7 +477,7 @@ function containerProto:OnCreate(name, bagIds, isBank)
 
 				GameTooltip:Hide()
 
-				-- create a menu and adjust its position if dropdown is too close to top edge of screen.  
+				-- create a menu and adjust its position if dropdown is too close to top edge of screen.
 				local x, y = GetCursorPosition()
 				local screenHeight = UIParent:GetTop()
 				local threshold = 200
@@ -488,7 +491,7 @@ function containerProto:OnCreate(name, bagIds, isBank)
    					end
 
 
-				elseif y > screenHeight - threshold and not IsAltKeyDown() and not IsShiftKeyDown() then 
+				elseif y > screenHeight - threshold and not IsAltKeyDown() and not IsShiftKeyDown() then
 
 					self.lastClickTime = GetTime()
 					EasyMenu(menuList2, menuFrame2, background, 0, 0, "MENU", 2)
@@ -512,7 +515,7 @@ function containerProto:OnCreate(name, bagIds, isBank)
 
 				GameTooltip:Hide()
 
-				-- create a menu and adjust its position if dropdown is too close to top edge of screen.  
+				-- create a menu and adjust its position if dropdown is too close to top edge of screen.
 				local x, y = GetCursorPosition()
 				local screenHeight = UIParent:GetTop()
 				local threshold = 200
@@ -526,7 +529,7 @@ function containerProto:OnCreate(name, bagIds, isBank)
    					end
 
 
-				elseif addon.db.profile.clickMode == 1 and y > screenHeight - threshold and not IsAltKeyDown() and IsShiftKeyDown() then 
+				elseif addon.db.profile.clickMode == 1 and y > screenHeight - threshold and not IsAltKeyDown() and IsShiftKeyDown() then
 
 					self.lastClickTime = GetTime()
 					EasyMenu(menuList2, menuFrame2, background, 0, 0, "MENU", 2)
@@ -870,12 +873,30 @@ function containerProto:UpdateContent(bag)
 	self:Debug('UpdateContent', bag)
 	local added, removed, changed = self.added, self.removed, self.changed
 	local content = self.content[bag]
-	local newSize = GetContainerNumSlots(bag)
-	local _, bagFamily = GetContainerNumFreeSlots(bag)
-	bagFamily = bag == KEYRING_CONTAINER and 256 or bagFamily
+
+	-- Check if this is a Guild Bank bag
+	local isGuildBank = addon:IsGuildBankBag(bag)
+	local newSize
+	local bagFamily
+
+	if isGuildBank then
+		newSize = addon:GetGuildBankNumSlots(bag)
+		bagFamily = 0  -- Guild bank doesn't have family restrictions
+	else
+		newSize = GetContainerNumSlots(bag)
+		_, bagFamily = GetContainerNumFreeSlots(bag)
+		bagFamily = bag == KEYRING_CONTAINER and 256 or bagFamily
+	end
+
 	content.family = bagFamily
+
 	for slot = 1, newSize do
-		local itemId = GetContainerItemID(bag, slot)
+		local itemId
+		if isGuildBank then
+			itemId = addon:GetGuildBankItemID(bag, slot)
+		else
+			itemId = GetContainerItemID(bag, slot)
+		end
 		-- Explicitly clear empty keyring slots to remove ghost buttons
 		if bag == KEYRING_CONTAINER and not itemId then
 			if content[slot] then
@@ -885,7 +906,13 @@ function containerProto:UpdateContent(bag)
 
 		else
 			-- ✅ Normal item handling logic
-			local link = GetContainerItemLink(bag, slot)
+			local link
+			if isGuildBank then
+				link = addon:GetGuildBankItemLink(bag, slot)
+			else
+				link = GetContainerItemLink(bag, slot)
+			end
+
 			if not itemId or (link and IsValidItemLink(link)) then
 				local slotData = content[slot]
 				if not slotData then
@@ -901,7 +928,34 @@ function containerProto:UpdateContent(bag)
 				end
 
 				local name, count, quality, iLevel, reqLevel, class, subclass, maxStack, equipSlot, texture, vendorPrice
-				if link then
+
+				if isGuildBank and itemId then
+					-- For guild bank, always get texture and count from guild bank API first
+					local gbTexture, itemCount = addon:GetGuildBankItemInfo(bag, slot)
+					texture = gbTexture
+					count = itemCount or 1
+
+					-- Then try to get additional info from item cache if available
+					if link then
+						local itemName, _, itemQuality, itemILevel, itemReqLevel, itemClass, itemSubclass, itemMaxStack, itemEquipSlot, itemTexture, itemVendorPrice = GetItemInfo(link)
+						if itemName then
+							name = itemName
+							quality = itemQuality
+							iLevel = itemILevel
+							reqLevel = itemReqLevel
+							class = itemClass
+							subclass = itemSubclass
+							maxStack = itemMaxStack
+							equipSlot = itemEquipSlot
+							vendorPrice = itemVendorPrice
+							-- Use item cache texture if available and valid
+							if itemTexture then
+								texture = itemTexture
+							end
+						end
+					end
+				elseif link then
+					-- Normal bags
 					name, _, quality, iLevel, reqLevel, class, subclass, maxStack, equipSlot, texture, vendorPrice = GetItemInfo(link)
 					count = select(2, GetContainerItemInfo(bag, slot)) or 0
 				else
@@ -1208,7 +1262,7 @@ local function DoLayoutSections(self, rowWidth, maxHeight)
 			end
 			if section then
 				section:SetHeaderOverflow(false)
-			end			
+			end
 			if x > 0 then
 				y = y + rowHeight + ITEM_SPACING
 				columnWidth = max(columnWidth, x)
