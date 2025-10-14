@@ -286,4 +286,6 @@ function mod:SetupFrameHiding()
 		-- Start retrying
 		self:ScheduleTimer(RetrySetup, 0.1)
 	end
-endaddon:Debug('GuildBank module loaded')
+end
+
+addon:Debug('GuildBank module loaded')
