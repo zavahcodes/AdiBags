@@ -6,6 +6,36 @@
 ## 🚀 Latest Improvements (October 2025)
 <details open> <summary> Click to see recent enhancements: </summary>
 
+### Integrated Addon Features 🆕
+All previously separate addons are now built into AdiBags core - no need for multiple addons!
+
+**Ascension WoW Support:**
+- **Built-in Ascension filters**: Native support for Ascension-specific items
+- **Mythic+ categorization**: Automatically groups Mythic+ items in dedicated section
+- **Tier Token detection**: Separates tier tokens for easy identification
+- **Mystic Enchants by class**: Auto-categorizes Mystic Enchants by class (Hunter, Warrior, Mage, etc.)
+- **Tools and Vanity items**: Dedicated sections for Ascension tools and vanity items
+- **Transmog indicators**: Visual overlay system for uncollected transmog items
+  - **Three display modes**: Choose between spinning star overlay, letter "T", or both
+  - **Bold letter indicator**: White "T" with thick outline in top-right corner
+  - **Customizable colors**: Configure overlay color for personal preference
+  - **Own category option**: Group transmog items in separate category or keep in normal categories
+- **Smart detection**: Uses Ascension's `C_Appearance` API for accurate transmog collection status
+
+**Item Binding Filter:**
+- **BoE categorization**: Separate section for Bind on Equip items
+- **BoP/Soulbound filter**: Optional section for Bind on Pickup items
+- **Equipable-only option**: Filter only equipable soulbound items (excludes consumables)
+- **Poor/Common BoE filter**: Option to include gray and white quality BoE items
+- **Fully configurable**: Enable/disable each binding type independently
+
+**Unusable Item Overlay:**
+- **Red overlay indicator**: Visual red tint on items you cannot use
+- **Smart detection**: Scans tooltips for red text (level, class, race, profession requirements)
+- **Performance optimized**: Debounced updates and efficient tooltip scanning
+- **One-click toggle**: Easy enable/disable through AdiBags options
+- **Works with everything**: Detects any restriction shown in red on tooltips
+
 ### Item Count Across Characters 🆕
 - **Cross-character item tracking**: See how many of each item you have across all your characters on the same realm
 - **Tooltip integration**: Item counts automatically appear in tooltips when hovering over items

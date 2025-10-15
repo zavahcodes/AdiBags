@@ -69,6 +69,10 @@ modules\GuildBank.lua
 modules\DataStoreCompat.lua
 modules\ItemCount.lua
 modules\ItemCountTooltip.lua
+modules\AscensionFilters.lua
+modules\AscensionTransmog.lua
+modules\ItemBinding.lua
+modules\UnusableItems.lua
 
 DefaultFilters.lua
 

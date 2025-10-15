@@ -275,6 +275,50 @@ L["Total"] = true
 L["Gold Tracker"] = true
 L["Track gold amounts for all characters on this realm."] = true
 
+-- modules/AscensionFilters.lua
+L["Ascension Filters"] = true
+L["Automatically categorize items specific to Ascension WoW, including Mythic+ items, Tier Tokens, Mystic Enchants, and more."] = true
+L["Enable Ascension Filters"] = true
+L["Enable automatic categorization of Ascension-specific items."] = true
+
+-- modules/AscensionTransmog.lua
+L["Ascension Transmog Indicators"] = true
+L["Add visual indicators to uncollected transmog items with configurable display modes."] = true
+L["Enable Transmog Indicators"] = true
+L["Show visual indicators on uncollected transmog items."] = true
+L["Group Transmog in Own Category"] = true
+L["If enabled, transmog items will appear in their own 'Transmog' category. If disabled, they will appear in their normal categories but keep the visual indicator."] = true
+L["Transmog Indicator Display"] = true
+L["Choose how to display transmog indicators on uncollected transmog items."] = true
+L["Spinning Overlay Only"] = true
+L["Letter 'T' Only"] = true
+L["Both Overlay and Letter"] = true
+L["Transmog Overlay Color"] = true
+L["Choose the color for the transmog overlay that appears on uncollected transmog items."] = true
+
+-- modules/ItemBinding.lua
+L["Item Binding"] = true
+L["Put BoA, BoE, and BoP items in their own sections."] = true
+L["Enable BoE"] = true
+L["Check this if you want a section for BoE items."] = true
+L["Filter Poor/Common BoE"] = true
+L["Also filter Poor (gray) and Common (white) quality BoE items."] = true
+L["Soulbound"] = true
+L["Soulbound item filtering options"] = true
+L["Enable Soulbound"] = true
+L["Check this if you want a section for BoP items."] = true
+L["Only Equipable"] = true
+L["Only filter equipable soulbound items."] = true
+L["BoE"] = true
+L["BoA"] = true
+L["BoP"] = "Soulbound"
+
+-- modules/UnusableItems.lua
+L["Unusable Item Overlay"] = true
+L["Adds a red overlay to items that are unusable for you."] = true
+L["Enable Overlay"] = true
+L["Check this if you want overlay shown for unusable items"] = true
+
 -- modules/NewItemTracking.lua
 L["Click to reset item status."] = true
 L["Highlight color"] = true
@@ -1066,6 +1110,47 @@ elseif locale == 'esES' then
     L["Total"] = "Total"
     L["Gold Tracker"] = "Rastreador de oro"
     L["Track gold amounts for all characters on this realm."] = "Rastrea la cantidad de oro de todos los personajes en este reino."
+
+    L["Ascension Filters"] = "Filtros de Ascension"
+    L["Automatically categorize items specific to Ascension WoW, including Mythic+ items, Tier Tokens, Mystic Enchants, and more."] = "Categoriza automáticamente objetos específicos de Ascension WoW, incluyendo objetos Mítico+, Fichas de Tier, Encantamientos Místicos y más."
+    L["Enable Ascension Filters"] = "Activar Filtros de Ascension"
+    L["Enable automatic categorization of Ascension-specific items."] = "Activa la categorización automática de objetos específicos de Ascension."
+
+    L["Ascension Transmog Indicators"] = "Indicadores de Transfiguración Ascension"
+    L["Add visual indicators to uncollected transmog items with configurable display modes."] = "Añade indicadores visuales a objetos de transfiguración no coleccionados con modos de visualización configurables."
+    L["Enable Transmog Indicators"] = "Activar Indicadores de Transfiguración"
+    L["Show visual indicators on uncollected transmog items."] = "Muestra indicadores visuales en objetos de transfiguración no coleccionados."
+    L["Group Transmog in Own Category"] = "Agrupar Transfiguración en Categoría Propia"
+    L["If enabled, transmog items will appear in their own 'Transmog' category. If disabled, they will appear in their normal categories but keep the visual indicator."] = "Si está activado, los objetos de transfiguración aparecerán en su propia categoría 'Transfiguración'. Si está desactivado, aparecerán en sus categorías normales pero mantendrán el indicador visual."
+    L["Transmog Indicator Display"] = "Visualización de Indicador de Transfiguración"
+    L["Choose how to display transmog indicators on uncollected transmog items."] = "Elige cómo mostrar los indicadores de transfiguración en objetos no coleccionados."
+    L["Spinning Overlay Only"] = "Solo Overlay Giratorio"
+    L["Letter 'T' Only"] = "Solo Letra 'T'"
+    L["Both Overlay and Letter"] = "Ambos Overlay y Letra"
+    L["Transmog Overlay Color"] = "Color del Overlay de Transfiguración"
+    L["Choose the color for the transmog overlay that appears on uncollected transmog items."] = "Elige el color del overlay de transfiguración que aparece en objetos no coleccionados."
+
+    L["Item Binding"] = "Vinculación de Objetos"
+    L["Put BoA, BoE, and BoP items in their own sections."] = "Coloca objetos BoA, BoE y BoP en sus propias secciones."
+    L["Enable BoE"] = "Activar BoE"
+    L["Check this if you want a section for BoE items."] = "Activa esto si quieres una sección para objetos BoE."
+    L["Filter Poor/Common BoE"] = "Filtrar BoE Pobre/Común"
+    L["Also filter Poor (gray) and Common (white) quality BoE items."] = "También filtra objetos BoE de calidad Pobre (gris) y Común (blanco)."
+    L["Soulbound"] = "Vinculado"
+    L["Soulbound item filtering options"] = "Opciones de filtrado de objetos vinculados"
+    L["Enable Soulbound"] = "Activar Vinculados"
+    L["Check this if you want a section for BoP items."] = "Activa esto si quieres una sección para objetos BoP."
+    L["Only Equipable"] = "Solo Equipables"
+    L["Only filter equipable soulbound items."] = "Solo filtra objetos vinculados equipables."
+    L["BoE"] = "BoE"
+    L["BoA"] = "BoA"
+    L["BoP"] = "Vinculado"
+
+    L["Unusable Item Overlay"] = "Overlay de Objetos Inutilizables"
+    L["Adds a red overlay to items that are unusable for you."] = "Añade un overlay rojo a objetos que no puedes usar."
+    L["Enable Overlay"] = "Activar Overlay"
+    L["Check this if you want overlay shown for unusable items"] = "Activa esto si quieres mostrar overlay en objetos inutilizables"
+
     L["New"] = "Nuevo"
     L["New item highlight"] = "Resaltar Objetos nuevos (acction to do)  -  Nuevos objetos resaltados ( action done)"
     L["One section per set"] = "Una seccion por grupo"
